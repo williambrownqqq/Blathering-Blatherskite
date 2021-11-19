@@ -1,30 +1,64 @@
 import telebot
 import config
+import json
 from telebot import types
+DATA_JSON = "data.json"
 bot = telebot.TeleBot(config.TOKEN)
+user_dict = {}
+class User:
+    def __init__(self, name, age):
+        self.name = name
+        self.age = age
+        self.sex = None
+    @property
+    def age(self):
+        return self.__age
+    @age.setter
+    def age(self, age):
+        self.__age = age
 
+    @property
+    def name(self):
+        return self.__name
+
+    @name.setter
+    def name(self, name):
+        self.__name = name
+
+    def __str__(self):
+        return f'{self.name} {self.age}'
 @bot.message_handler(commands=['start'])
-def quickstart(message):
-    bot.send_sticker(message.chat.id, "CAACAgIAAxkBAAEBxqpgBCLldd0_QYssYYNeFfTGgLaanwACWQEAAhAabSIdlWw5X85AHx4E")
-    bot.send_message(message.chat.id, "Дорова епта бандиты")
-    bot.send_message(message.chat.id, "Хочешь big cock?")
-    keyboard = types.ReplyKeyboardMarkup(row_width=1, resize_keyboard=True)
-    button_phone = types.KeyboardButton(text="Yes, i waaaaaant")
-    keyboard.add(button_phone)
-    bot.send_message(message.chat.id,"Enter ypur age", reply_markup=keyboard)
+def start_message(message):
+    bot.send_message(message.chat.id,'Привет, хочешь знакомиться?')
+    markup = types.ReplyKeyboardMarkup(True, True)
+    markup.add(types.KeyboardButton("Да, я хочу знакомств"))
+    markup.add(types.KeyboardButton("Нет, я хочу уйти"))
+    bot.send_message(message.chat.id, 'Выберите что вам надо', reply_markup=markup)
+@bot.message_handler(content_types='text')
+def message_reply(message):
+    if message.text=="Да, я хочу знакомств":
+        msg = bot.reply_to(message, "Введите свой возраст")
+        bot.register_next_step_handler(msg, process_age_step)
+    elif message.text=="Нет, я хочу уйти":
+        bot.send_message(message.chat.id,'Спасибо за прочтение статьи!')
 
-@bot.message_handler(content_types=['text'])
-def getMessage(message):
-    #bot.send_message(message.chat.id, message)
-    keyboard = types.ReplyKeyboardMarkup(row_width=1, resize_keyboard=True)
-    button_phone = types.KeyboardButton(text="Yes, i waaaaaant")
-    keyboard.add(button_phone)
-    bot.send_message(message.chat.id,
-                     "Enter ypur age",
-                     reply_markup=keyboard)
-
-
-bot.polling(none_stop=True)
+def process_age_step(message):
+    try:
+        chat_id = message.chat.id
+        age = message.text
+        user = User(message.from_user.username, age)
+        user_dict[chat_id] = user
+        print(User)
+        msg = bot.reply_to(message, 'Ты тупой?')
+        bot.register_next_step_handler(msg, process_dumb_step)
+    except Exception as e:
+        bot.reply_to(message, 'oooops')
+def process_dumb_step(message):
+    pass
+@bot.message_handler(commands=['auth'])
+def send_auth(message):
+    pass
+bot.polling(none_stop=True, interval=0)
 # def get_text_messages(message):
 #     # Если написали «Привет»
 #     if message.text == "Привет":
