@@ -34,7 +34,8 @@ class User:
     def __str__(self):
         return f"{self.name} {self.age}"
 
-''' Start '''
+
+""" start command processing """
 @bot.message_handler(commands=['start'])
 def start_message(message):
     bot.send_sticker(message.chat.id, 'CAACAgIAAxkBAAEDUrphmCOr4kukL99zoy9Vop4nguUGqgACQAADOPCiGncMZgcCUVNuIgQ')
@@ -44,6 +45,8 @@ def start_message(message):
     markup.add(types.KeyboardButton("Нет, я хочу уйти"))
     bot.send_message(message.chat.id, 'Выберите что вам надо', reply_markup=markup)
     #markup.editMessageReplyMarkup(reply_markup=1)
+
+""" text command processing """
 @bot.message_handler(content_types='text')
 def message_reply(message):
     if message.text=="Да, я хочу знакомств":
