@@ -49,7 +49,7 @@ def message_reply(message):
         bot.register_next_step_handler(msg, process_age_step)
     elif message.text=="Нет, я хочу уйти":
         bot.send_message(message.chat.id,'Спасибо использование бота!')
-        bot.stop_polling()
+        #bot.stop_polling()
     else:
         bot.send_message(message.chat.id, 'Пожалуйста повторите запрос!')
 def process_age_step(message):
@@ -64,12 +64,12 @@ def process_age_step(message):
         print(e)
         bot.reply_to(message, 'Что-то не так, попробуй еще раз')
 def process_dumb_step(message):
-    bot.stop_polling()
+    with open(DATA_JSON, "w") as f:
+        json.dump(user_dict, f, indent = 4)
+    #bot.stop_polling()
     #pass
 @bot.message_handler(commands=['stop'])
 def stop_auth(message):
-    with open(DATA_JSON, "w") as f:
-        json.dump(user_dict, f, indent = 4)
     bot.stop_polling()
     pass
 bot.polling(none_stop=True, interval=0)
