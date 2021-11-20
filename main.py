@@ -17,6 +17,8 @@ class User:
     def age(self, age):
         if not isinstance(age, int):
             raise TypeError("Must be int!")
+        if not 14<age<100:
+            raise ValueError("Must be higher than 14 and lower than 100")
         self.__age = age
 
     @property
@@ -60,7 +62,7 @@ def process_age_step(message):
         bot.register_next_step_handler(msg, process_dumb_step)
     except Exception as e:
         print(e)
-        bot.reply_to(message, 'oooops')
+        bot.reply_to(message, 'Что-то не так, попробуй еще раз')
 def process_dumb_step():
     bot.stop_polling()
     #pass
