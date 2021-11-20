@@ -33,6 +33,8 @@ class User:
 
     def __str__(self):
         return f"{self.name} {self.age}"
+
+''' Start '''
 @bot.message_handler(commands=['start'])
 def start_message(message):
     bot.send_sticker(message.chat.id, 'CAACAgIAAxkBAAEDUrphmCOr4kukL99zoy9Vop4nguUGqgACQAADOPCiGncMZgcCUVNuIgQ')
