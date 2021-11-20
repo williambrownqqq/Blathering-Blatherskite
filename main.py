@@ -63,7 +63,7 @@ def process_age_step(message):
     except Exception as e:
         print(e)
         bot.reply_to(message, 'Что-то не так, попробуй еще раз')
-def process_dumb_step():
+def process_dumb_step(message):
     bot.stop_polling()
     #pass
 @bot.message_handler(commands=['stop'])
