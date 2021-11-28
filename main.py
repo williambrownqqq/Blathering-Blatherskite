@@ -1,39 +1,15 @@
 import telebot
 import config
+import database
 import json
 from telebot import types
+#import registration # registration module
+from user import User  # user definition
+from database import *
+
+user_dict = {}
 DATA_JSON = "data.json"
 bot = telebot.TeleBot(config.TOKEN)
-user_dict = {}
-class User:
-    def __init__(self, name, age):
-        self.name = name
-        self.age = age
-        self.sex = None
-    @property
-    def age(self):
-        return self.__age
-    @age.setter
-    def age(self, age):
-        if not isinstance(age, int):
-            raise TypeError("Must be int!")
-        if not 14<age<100:
-            raise ValueError("Must be higher than 14 and lower than 100")
-        self.__age = age
-
-    @property
-    def name(self):
-        return self.__name
-
-    @name.setter
-    def name(self, name):
-        if not isinstance(name, str):
-            raise TypeError("Must be str")
-        self.__name = name
-
-    def __str__(self):
-        return f"{self.name} {self.age}"
-
 
 """ start command processing """
 """@bot.message_handler(commands=['start'])
@@ -45,7 +21,6 @@ def start_message(message):
     markup.add(types.KeyboardButton("Нет, я хочу уйти"))
     bot.send_message(message.chat.id, 'Выберите что вам надо', reply_markup=markup)
     #markup.editMessageReplyMarkup(reply_markup=1)"""
-
 
 """ text command processing """
 """
@@ -83,188 +58,170 @@ bot.polling(none_stop=True, interval=0)
 """
 
 
-@bot.message_handler(commands=['start'])
+@bot.message_handler(commands=['start'])  # начинаем
 def start(message):
     bot.send_sticker(message.chat.id, 'CAACAgIAAxkBAAEDUrphmCOr4kukL99zoy9Vop4nguUGqgACQAADOPCiGncMZgcCUVNuIgQ')
-    bot.send_message(message.chat.id, 'Привет, хочешь знакомиться?')
-    markup = types.ReplyKeyboardMarkup(resize_keyboard=True, row_width=2)
-    markup.add(types.KeyboardButton("Да, я хочу знакомств"))
-    markup.add(types.KeyboardButton("Нет, я хочу уйти"))
-    msg = bot.send_message(message.chat.id, 'Выберите что вам надо', reply_markup=markup)
-    bot.register_next_step_handler(msg, menu)
-    # markup.editMessageReplyMarkup(reply_markup=1)
+
+    markup_start_choice = types.ReplyKeyboardMarkup(resize_keyboard=True, row_width=2,
+                                                    one_time_keyboard=True)  # задали формат кнопок
+    yesbutton = types.KeyboardButton("Yes, i want")
+    nobutton = types.KeyboardButton("No, i won't")
+    markup_start_choice.add(yesbutton, nobutton)  # добавили кнопки
+
+    bot.send_message(message.chat.id, "Привет, начнем?",
+                     reply_markup=markup_start_choice)  # подвязали кнопки к сообщению
 
 
-@bot.message_handler(content_types=['text'])
+# @bot.callback_query_handler(func=lambda call: True)
+# def answer(call):
+#     if call.data == "Yes, i want":
+#         bot.send_message(call.message.chat.id, "halo")
+#
+#     elif call.data == 'no':
+#         pass
+
+@bot.message_handler(content_types=['text'])  # обрабатываем кнопки клавиатуры
+def getText(message):
+    if message.text == 'Yes, i want':  # c кнопки старта переходим в меню
+        menu(message)
+    elif message.text == "No, i won't":
+        bot.send_message(message.chat.id, "exit")  # доделать
+        backMenu(message)
+    elif message.text == '1':  # create profile
+        user_profile(message) # from registration module
+    elif message.text == 'Menu':
+        menu(message)
+
+    # types.ReplyKeyboardRemove()
+    # bot.send_message(message.chat.id, 'Hello')
+    # markup = types.ReplyKeyboardMarkup(one_time_keyboard=False, resize_keyboard=True, row_width=2)
+    # btn0 = types.KeyboardButton("Мой профиль")
+    # btn1 = types.KeyboardButton("Настройки поиска")
+    # btn2 = types.KeyboardButton("Ищем любовь")
+    # btn3 = types.KeyboardButton("Кому я нравлюсь")
+    # btn4 = types.KeyboardButton("Копейка в развитие")
+    # markup.add(btn0, btn1, btn2, btn3, btn4)
+    # bot.send_sticker(message.chat.id, 'CAACAgIAAxkBAAEDUrphmCOr4kukL99zoy9Vop4nguUGqgACQAADOPCiGncMZgcCUVNuIgQ')
+    # start_handler = f"<b>Что дальше, {message.from_user.first_name}?</b>"
+    # msg = bot.send_message(message.chat.id, start_handler, parse_mode='html', reply_markup=markup)
+    # bot.register_next_step_handler(msg, menu_next)
+
+
+""" regular menu """
+
 def menu(message):
-    types.ReplyKeyboardRemove()
-    bot.send_message(message.chat.id, 'Hello')
-    markup = types.ReplyKeyboardMarkup(one_time_keyboard=False, resize_keyboard=True, row_width=2)
-    btn0 = types.KeyboardButton("Мой профиль")
-    btn1 = types.KeyboardButton("Настройки поиска")
-    btn2 = types.KeyboardButton("Ищем любовь")
-    btn3 = types.KeyboardButton("Кому я нравлюсь")
-    btn4 = types.KeyboardButton("Копейка в развитие")
-    markup.add(btn0, btn1, btn2, btn3, btn4)
-    bot.send_sticker(message.chat.id, 'CAACAgIAAxkBAAEDUrphmCOr4kukL99zoy9Vop4nguUGqgACQAADOPCiGncMZgcCUVNuIgQ')
-    start_handler = f"<b>Что дальше, {message.from_user.first_name}?</b>"
-    msg = bot.send_message(message.chat.id, start_handler, parse_mode='html', reply_markup=markup)
-    bot.register_next_step_handler(msg, menu_next)
+    markup_menu = types.ReplyKeyboardMarkup(resize_keyboard=True, row_width=3, one_time_keyboard=True)
+    profilebutton = types.KeyboardButton("1")
+    viewbutton = types.KeyboardButton("2")
+    stopbutton = types.KeyboardButton("3")
+    markup_menu.add(profilebutton, viewbutton, stopbutton)
+    bot.send_message(message.chat.id, f"1. My profile\n"
+                                      f"2. View profile\n"
+                                      f"3. Stop",
+                     reply_markup=markup_menu)
 
 
-def menu_next(message):
-    get_message_bot = message.text
-    if get_message_bot == "Мой профиль":
-        markup = types.ReplyKeyboardMarkup(one_time_keyboard=False, resize_keyboard=True, row_width=2)
-        btn0 = types.KeyboardButton("Заполнить профиль")
-        btn1 = types.KeyboardButton("Удалить профиль")
-        btn2 = types.KeyboardButton("Главное меню")
-        markup.add(btn0, btn1)
-        markup.add(btn2)
-        msg = bot.send_message(message.chat.id, "Profile", parse_mode='html', reply_markup=markup)
-        bot.register_next_step_handler(msg, profile_next)
+""" Menu after u don't want continue"""
 
-    elif get_message_bot == "Настройки поиска":
-        markup = types.ReplyKeyboardMarkup(one_time_keyboard=False, resize_keyboard=True, row_width=1)
-        btn0 = types.KeyboardButton("Заполнить поиск")
-        btn1 = types.KeyboardButton("Главное меню")
-        markup.add(btn0, btn1)
-        msg = bot.send_message(message.chat.id, "find_settings", parse_mode='html', reply_markup=markup)
-        bot.register_next_step_handler(msg, find_settings_next)
-    elif get_message_bot == "Ищем любовь":
-        markup = types.ReplyKeyboardMarkup(one_time_keyboard=False, resize_keyboard=True, row_width=1)
-        btn1 = types.KeyboardButton("Главное меню")
-        markup.add(btn1)
-        msg = bot.send_message(message.chat.id, "find_love", parse_mode='html', reply_markup=markup)
-        bot.register_next_step_handler(msg, find_love_next)
-    elif get_message_bot == "Кому я нравлюсь":
-        markup = types.ReplyKeyboardMarkup(one_time_keyboard=False, resize_keyboard=True, row_width=1)
-        btn1 = types.KeyboardButton("Главное меню")
-        markup.add(btn1)
-        msg = bot.send_message(message.chat.id, "finded_love", parse_mode='html', reply_markup=markup)
-        bot.register_next_step_handler(msg, finded_love_next)
-    elif get_message_bot == "Копейка в развитие":
-        markup = types.ReplyKeyboardMarkup(one_time_keyboard=False, resize_keyboard=True, row_width=1)
-        btn1 = types.KeyboardButton("Главное меню")
-        markup.add(btn1)
-        msg = bot.send_message(message.chat.id, "sponsor", parse_mode='html', reply_markup=markup)
-        bot.register_next_step_handler(msg, sponsor_next)
-    else:
-        bot.send_message(message.chat.id, "6", parse_mode='html')
-        bot.register_next_step_handler(message, menu)
+def backMenu(message):
+    markup_back = types.ReplyKeyboardMarkup(resize_keyboard=True, row_width=1,
+                                            one_time_keyboard=True)  # задали формат кнопок
+    backbutton = types.KeyboardButton("Menu")
+
+    markup_back.add(backbutton)  # добавили кнопки
+
+    bot.send_message(message.chat.id, "hope u find a friend",
+                     reply_markup=markup_back)  # подвязали кнопки к сообщению
 
 
-def sponsor_next(message):
-    get_message_bot = message.text
-    markup = types.ReplyKeyboardMarkup(one_time_keyboard=False, resize_keyboard=True, row_width=2)
-    btn0 = types.KeyboardButton("Мой профиль")
-    btn1 = types.KeyboardButton("Настройки поиска")
-    btn2 = types.KeyboardButton("Ищем любовь")
-    btn3 = types.KeyboardButton("Кому я нравлюсь")
-    btn4 = types.KeyboardButton("Копейка в развитие")
-    markup.add(btn0, btn1, btn2, btn3, btn4)
-    bot.send_sticker(message.chat.id, 'CAACAgIAAxkBAAEDUrphmCOr4kukL99zoy9Vop4nguUGqgACQAADOPCiGncMZgcCUVNuIgQ')
-    start_handler = f"<b>Что дальше, {message.from_user.first_name}?</b>"
-    msg = bot.send_message(message.chat.id, start_handler, parse_mode='html', reply_markup=markup)
+# def profile_next(message):
+#     get_message_bot = message.text
+#     markup = types.ReplyKeyboardMarkup(one_time_keyboard=False, resize_keyboard=True, row_width=2)
+#     btn0 = types.KeyboardButton("Мой профиль")
+#     btn1 = types.KeyboardButton("Настройки поиска")
+#     btn2 = types.KeyboardButton("Ищем любовь")
+#     btn3 = types.KeyboardButton("Кому я нравлюсь")
+#     btn4 = types.KeyboardButton("Копейка в развитие")
+#     markup.add(btn0, btn1, btn2, btn3, btn4)
+#     bot.send_sticker(message.chat.id, 'CAACAgIAAxkBAAEDUrphmCOr4kukL99zoy9Vop4nguUGqgACQAADOPCiGncMZgcCUVNuIgQ')
+#     start_handler = f"<b>Что дальше, {message.from_user.first_name}?</b>"
+#     msg = bot.send_message(message.chat.id, start_handler, parse_mode='html', reply_markup=markup)
+#
+#     if get_message_bot == "Заполнить профиль":
+#         bot.send_message(message.chat.id, "Ребят тут делаем заполнение аккаунта", parse_mode='html')
+#         # user_profile(message)
+#         bot.register_next_step_handler(msg, menu_next)
+#     elif get_message_bot == "Удалить профиль":
+#         bot.send_message(message.chat.id, "Удалил профиль", parse_mode='html')
+#         bot.register_next_step_handler(msg, menu_next)
+#     elif get_message_bot == "Главное меню":
+#         bot.send_message(message.chat.id, "Главное меню", parse_mode='html')
+#         bot.register_next_step_handler(msg, menu_next)
+#     else:
+#         bot.send_message(message.chat.id, "Неправильный ввод", parse_mode='html')
+#         bot.register_next_step_handler(message, profile_next)
 
-    if get_message_bot == "Главное меню":
-        bot.register_next_step_handler(msg, menu_next)
-    else:
-        bot.send_message(message.chat.id, "Неправильный ввод", parse_mode='html')
-        bot.register_next_step_handler(message, find_settings_next)
-
-
-def finded_love_next(message):
-    get_message_bot = message.text
-    markup = types.ReplyKeyboardMarkup(one_time_keyboard=False, resize_keyboard=True, row_width=2)
-    btn0 = types.KeyboardButton("Мой профиль")
-    btn1 = types.KeyboardButton("Настройки поиска")
-    btn2 = types.KeyboardButton("Ищем любовь")
-    btn3 = types.KeyboardButton("Кому я нравлюсь")
-    btn4 = types.KeyboardButton("Копейка в развитие")
-    markup.add(btn0, btn1, btn2, btn3, btn4)
-    bot.send_sticker(message.chat.id, 'CAACAgIAAxkBAAEDUrphmCOr4kukL99zoy9Vop4nguUGqgACQAADOPCiGncMZgcCUVNuIgQ')
-    start_handler = f"<b>Что дальше, {message.from_user.first_name}?</b>"
-    msg = bot.send_message(message.chat.id, start_handler, parse_mode='html', reply_markup=markup)
-
-    if get_message_bot == "Главное меню":
-        bot.register_next_step_handler(msg, menu_next)
-    else:
-        bot.send_message(message.chat.id, "Неправильный ввод", parse_mode='html')
-        bot.register_next_step_handler(message, find_settings_next)
+def user_profile(message):
+    name = bot.send_message(message.chat.id, 'Введи имя')
+    bot.register_next_step_handler(name, process_name_step)
 
 
-def find_love_next(message):
-    get_message_bot = message.text
-    markup = types.ReplyKeyboardMarkup(one_time_keyboard=False, resize_keyboard=True, row_width=2)
-    btn0 = types.KeyboardButton("Мой профиль")
-    btn1 = types.KeyboardButton("Настройки поиска")
-    btn2 = types.KeyboardButton("Ищем любовь")
-    btn3 = types.KeyboardButton("Кому я нравлюсь")
-    btn4 = types.KeyboardButton("Копейка в развитие")
-    markup.add(btn0, btn1, btn2, btn3, btn4)
-    bot.send_sticker(message.chat.id, 'CAACAgIAAxkBAAEDUrphmCOr4kukL99zoy9Vop4nguUGqgACQAADOPCiGncMZgcCUVNuIgQ')
-    start_handler = f"<b>Что дальше, {message.from_user.first_name}?</b>"
-    msg = bot.send_message(message.chat.id, start_handler, parse_mode='html', reply_markup=markup)
+def process_name_step(message):
+    try:
+        chatID = message.chat.id
+        name = message.text
 
-    if get_message_bot == "Главное меню":
-        bot.register_next_step_handler(msg, menu_next)
-    else:
-        bot.send_message(message.chat.id, "Неправильный ввод", parse_mode='html')
-        bot.register_next_step_handler(message, find_settings_next)
+        user_dict['chatID'] = chatID
+        user_dict['name'] = name
+
+        msg = bot.send_message(message.chat.id, 'How old are you?')
+        bot.register_next_step_handler(msg, process_age_step)
+    except Exception as e:
+        bot.reply_to(message, 'oops')
 
 
-def find_settings_next(message):
-    get_message_bot = message.text
-    markup = types.ReplyKeyboardMarkup(one_time_keyboard=False, resize_keyboard=True, row_width=2)
-    btn0 = types.KeyboardButton("Мой профиль")
-    btn1 = types.KeyboardButton("Настройки поиска")
-    btn2 = types.KeyboardButton("Ищем любовь")
-    btn3 = types.KeyboardButton("Кому я нравлюсь")
-    btn4 = types.KeyboardButton("Копейка в развитие")
-    markup.add(btn0, btn1, btn2, btn3, btn4)
-    bot.send_sticker(message.chat.id, 'CAACAgIAAxkBAAEDUrphmCOr4kukL99zoy9Vop4nguUGqgACQAADOPCiGncMZgcCUVNuIgQ')
-    start_handler = f"<b>Что дальше, {message.from_user.first_name}?</b>"
-    msg = bot.send_message(message.chat.id, start_handler, parse_mode='html', reply_markup=markup)
+def process_age_step(message):
+    try:
+        age = message.text
+        if not age.isdigit():
+            msg = bot.send_message(message.chat.id, 'Age should be a number. How old are you?')
+            bot.register_next_step_handler(msg, process_age_step)
+            return
 
-    if get_message_bot == "Заполнить поиск":
-        bot.send_message(message.chat.id, "Ребят тут делаем заполнение предпочтений", parse_mode='html')
-        bot.register_next_step_handler(msg, menu_next)
-    elif get_message_bot == "Главное меню":
-        bot.register_next_step_handler(msg, menu_next)
-    else:
-        bot.send_message(message.chat.id, "Неправильный ввод", parse_mode='html')
-        bot.register_next_step_handler(message, find_settings_next)
+        # user = user_dict[chatID]
+        # user.age = age
+        user_dict['age'] = age
+
+        markup = types.ReplyKeyboardMarkup(resize_keyboard=True, row_width=2, one_time_keyboard=True)
+        markup.add('Male', 'Female')
+        msg = bot.send_message(message.chat.id, 'What is your gender', reply_markup=markup)
+        bot.register_next_step_handler(msg, process_sex_step)
+    except Exception as e:
+        bot.reply_to(message, 'oooops')
 
 
-def profile_next(message):
-    get_message_bot = message.text
-    markup = types.ReplyKeyboardMarkup(one_time_keyboard=False, resize_keyboard=True, row_width=2)
-    btn0 = types.KeyboardButton("Мой профиль")
-    btn1 = types.KeyboardButton("Настройки поиска")
-    btn2 = types.KeyboardButton("Ищем любовь")
-    btn3 = types.KeyboardButton("Кому я нравлюсь")
-    btn4 = types.KeyboardButton("Копейка в развитие")
-    markup.add(btn0, btn1, btn2, btn3, btn4)
-    bot.send_sticker(message.chat.id, 'CAACAgIAAxkBAAEDUrphmCOr4kukL99zoy9Vop4nguUGqgACQAADOPCiGncMZgcCUVNuIgQ')
-    start_handler = f"<b>Что дальше, {message.from_user.first_name}?</b>"
-    msg = bot.send_message(message.chat.id, start_handler, parse_mode='html', reply_markup=markup)
+def process_sex_step(message):
+    try:
+        sex = message.text
 
-    if get_message_bot == "Заполнить профиль":
-        bot.send_message(message.chat.id, "Ребят тут делаем заполнение аккаунта", parse_mode='html')
-        bot.register_next_step_handler(msg, menu_next)
-    elif get_message_bot == "Удалить профиль":
-        bot.send_message(message.chat.id, "Удалил профиль", parse_mode='html')
-        bot.register_next_step_handler(msg, menu_next)
-    elif get_message_bot == "Главное меню":
-        bot.send_message(message.chat.id, "Главное меню", parse_mode='html')
-        bot.register_next_step_handler(msg, menu_next)
-    else:
-        bot.send_message(message.chat.id, "Неправильный ввод", parse_mode='html')
-        bot.register_next_step_handler(message, profile_next)
+        user = User(user_dict['chatID'], user_dict['name'])
 
+        user_dict['sex'] = sex
+        user.age = user_dict['age']
+        user.sex = user_dict['sex']
 
+        if (sex == u'Male') or (sex == u'Female'):
+            print(user_dict)
+            print(user)
+            pass
+        else:
+            raise Exception("Unknown sex")
 
+        writing(user)
+        bot.send_message(user_dict['chatID'],
+                         'Nice to meet you, ' + user.name + '\n Age: ' + str(user.age) + '\n Sex: ' + user.sex)
+    except Exception as e:
+        bot.reply_to(message, 'oooops')
 
 
 
