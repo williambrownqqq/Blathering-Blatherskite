@@ -4,58 +4,13 @@ import database
 import json
 from telebot import types
 #import registration # registration module
+import userRegistration
 from user import User  # user definition
 from database import *
 
 user_dict = {}
 DATA_JSON = "data.json"
 bot = telebot.TeleBot(config.TOKEN)
-
-""" start command processing """
-"""@bot.message_handler(commands=['start'])
-def start_message(message):
-    bot.send_sticker(message.chat.id, 'CAACAgIAAxkBAAEDUrphmCOr4kukL99zoy9Vop4nguUGqgACQAADOPCiGncMZgcCUVNuIgQ')
-    bot.send_message(message.chat.id,'Привет, хочешь знакомиться?')
-    markup = types.ReplyKeyboardMarkup(True, True)
-    markup.add(types.KeyboardButton("Да, я хочу знакомств"))
-    markup.add(types.KeyboardButton("Нет, я хочу уйти"))
-    bot.send_message(message.chat.id, 'Выберите что вам надо', reply_markup=markup)
-    #markup.editMessageReplyMarkup(reply_markup=1)"""
-
-""" text command processing """
-"""
-@bot.message_handler(content_types='text')
-def message_reply(message):
-    if message.text=="Да, я хочу знакомств":
-        msg = bot.reply_to(message, "Введите свой возраст")
-        bot.register_next_step_handler(msg, process_age_step)
-    elif message.text=="Нет, я хочу уйти":
-        bot.send_message(message.chat.id,'Спасибо использование бота!')
-        #bot.stop_polling()
-    else:
-        bot.send_message(message.chat.id, 'Пожалуйста повторите запрос!')
-def process_age_step(message):
-    try:
-        chat_id = message.chat.id
-        age = message.text
-        user = User(message.from_user.username, int(age))
-        user_dict[chat_id] = str(user)
-        msg = bot.reply_to(message, 'Я тебя понял, на этом всё, последние слова?')
-        bot.register_next_step_handler(msg, process_dumb_step)
-    except Exception as e:
-        print(e)
-        bot.reply_to(message, 'Что-то не так, попробуй еще раз')
-def process_dumb_step(message):
-    with open(DATA_JSON, "w") as f:
-        json.dump(user_dict, f, indent = 4)
-    #bot.stop_polling()
-    #pass
-@bot.message_handler(commands=['stop'])
-def stop_auth(message):
-    bot.stop_polling()
-    pass
-bot.polling(none_stop=True, interval=0)
-"""
 
 
 @bot.message_handler(commands=['start'])  # начинаем
@@ -92,20 +47,10 @@ def getText(message):
     elif message.text == 'Menu':
         menu(message)
 
-    # types.ReplyKeyboardRemove()
-    # bot.send_message(message.chat.id, 'Hello')
-    # markup = types.ReplyKeyboardMarkup(one_time_keyboard=False, resize_keyboard=True, row_width=2)
-    # btn0 = types.KeyboardButton("Мой профиль")
-    # btn1 = types.KeyboardButton("Настройки поиска")
-    # btn2 = types.KeyboardButton("Ищем любовь")
-    # btn3 = types.KeyboardButton("Кому я нравлюсь")
-    # btn4 = types.KeyboardButton("Копейка в развитие")
-    # markup.add(btn0, btn1, btn2, btn3, btn4)
-    # bot.send_sticker(message.chat.id, 'CAACAgIAAxkBAAEDUrphmCOr4kukL99zoy9Vop4nguUGqgACQAADOPCiGncMZgcCUVNuIgQ')
-    # start_handler = f"<b>Что дальше, {message.from_user.first_name}?</b>"
-    # msg = bot.send_message(message.chat.id, start_handler, parse_mode='html', reply_markup=markup)
-    # bot.register_next_step_handler(msg, menu_next)
 
+@bot.message_handler(content_types= ["photo"])
+def getImage(message):
+    print("Got photo")
 
 """ regular menu """
 
@@ -133,38 +78,16 @@ def backMenu(message):
     bot.send_message(message.chat.id, "hope u find a friend",
                      reply_markup=markup_back)  # подвязали кнопки к сообщению
 
-
-# def profile_next(message):
-#     get_message_bot = message.text
-#     markup = types.ReplyKeyboardMarkup(one_time_keyboard=False, resize_keyboard=True, row_width=2)
-#     btn0 = types.KeyboardButton("Мой профиль")
-#     btn1 = types.KeyboardButton("Настройки поиска")
-#     btn2 = types.KeyboardButton("Ищем любовь")
-#     btn3 = types.KeyboardButton("Кому я нравлюсь")
-#     btn4 = types.KeyboardButton("Копейка в развитие")
-#     markup.add(btn0, btn1, btn2, btn3, btn4)
-#     bot.send_sticker(message.chat.id, 'CAACAgIAAxkBAAEDUrphmCOr4kukL99zoy9Vop4nguUGqgACQAADOPCiGncMZgcCUVNuIgQ')
-#     start_handler = f"<b>Что дальше, {message.from_user.first_name}?</b>"
-#     msg = bot.send_message(message.chat.id, start_handler, parse_mode='html', reply_markup=markup)
-#
-#     if get_message_bot == "Заполнить профиль":
-#         bot.send_message(message.chat.id, "Ребят тут делаем заполнение аккаунта", parse_mode='html')
-#         # user_profile(message)
-#         bot.register_next_step_handler(msg, menu_next)
-#     elif get_message_bot == "Удалить профиль":
-#         bot.send_message(message.chat.id, "Удалил профиль", parse_mode='html')
-#         bot.register_next_step_handler(msg, menu_next)
-#     elif get_message_bot == "Главное меню":
-#         bot.send_message(message.chat.id, "Главное меню", parse_mode='html')
-#         bot.register_next_step_handler(msg, menu_next)
-#     else:
-#         bot.send_message(message.chat.id, "Неправильный ввод", parse_mode='html')
-#         bot.register_next_step_handler(message, profile_next)
-
+""" Pегистрация """
 def user_profile(message):
     name = bot.send_message(message.chat.id, 'Введи имя')
+    chatUserame = message.chat.username
+    user_dict['chatUserame'] = chatUserame
+    # print(message.chat.first_name) # lesha
+    # print(message.chat.last_name) # None
+    # print(message.chat.username) # Chat username
+    # print(message.chat.id) # chat ID
     bot.register_next_step_handler(name, process_name_step)
-
 
 def process_name_step(message):
     try:
@@ -174,11 +97,38 @@ def process_name_step(message):
         user_dict['chatID'] = chatID
         user_dict['name'] = name
 
+        msg = bot.send_message(message.chat.id, 'Write something about u')
+        bot.register_next_step_handler(msg, process_description_step)
+    except Exception as e:
+        bot.reply_to(message, 'oops')
+
+
+##############
+def process_description_step(message):
+    try:
+        chatID = message.chat.id
+        description = message.text
+
+        user_dict['chatID'] = chatID
+        user_dict['desciption'] = description
+
+        msg = bot.send_message(message.chat.id, 'Where are u from?')
+        bot.register_next_step_handler(msg, process_city_step)
+    except Exception as e:
+        bot.reply_to(message, 'oops')
+###########
+def process_city_step(message):
+    try:
+        chatID = message.chat.id
+        city = message.text
+
+        user_dict['chatID'] = chatID
+        user_dict['city'] = city
+
         msg = bot.send_message(message.chat.id, 'How old are you?')
         bot.register_next_step_handler(msg, process_age_step)
     except Exception as e:
         bot.reply_to(message, 'oops')
-
 
 def process_age_step(message):
     try:
@@ -199,7 +149,6 @@ def process_age_step(message):
     except Exception as e:
         bot.reply_to(message, 'oooops')
 
-
 def process_sex_step(message):
     try:
         sex = message.text
@@ -209,6 +158,9 @@ def process_sex_step(message):
         user_dict['sex'] = sex
         user.age = user_dict['age']
         user.sex = user_dict['sex']
+        user.city = user_dict['city']
+        user.describe = user_dict['desciption']
+        user.chatUsername = user_dict['chatUserame']
 
         if (sex == u'Male') or (sex == u'Female'):
             print(user_dict)
@@ -219,10 +171,14 @@ def process_sex_step(message):
 
         writing(user)
         bot.send_message(user_dict['chatID'],
-                         'Nice to meet you, ' + user.name + '\n Age: ' + str(user.age) + '\n Sex: ' + user.sex)
+                         'Nice to meet you, ' + user.name +
+                         '\n Age: ' + str(user.age) +
+                         '\n Sex: ' + user.sex +
+                         '\n City: ' + user.city +
+                         '\n Description: ' + user.describe)
+
     except Exception as e:
         bot.reply_to(message, 'oooops')
-
 
 
 if __name__ == '__main__':
