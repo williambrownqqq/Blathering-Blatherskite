@@ -1,7 +1,4 @@
-import telebot
-import config
-import database
-import requests
+from batya import bot
 from telebot import types
 #import registration # registration module
 import userRegistration
@@ -10,7 +7,6 @@ from database import *
 
 user_dict = {}
 DATA_JSON = "data.json"
-bot = telebot.TeleBot(config.TOKEN)
 
 
 @bot.message_handler(commands=['start'])  # начинаем
