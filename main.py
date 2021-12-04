@@ -1,7 +1,7 @@
 import telebot
 import config
 import database
-import json
+import requests
 from telebot import types
 #import registration # registration module
 import userRegistration
@@ -43,13 +43,32 @@ def getText(message):
         bot.send_message(message.chat.id, "exit")  # доделать
         backMenu(message)
     elif message.text == '1':  # create profile
+        #getImage(message)
         user_profile(message) # from registration module
     elif message.text == 'Menu':
         menu(message)
 
 
-@bot.message_handler(content_types= ["photo"])
+#@bot.message_handler(content_types= ['photo'])
 def getImage(message):
+    try:
+        rawFile = message.photo[2].file_id # photo id
+        #print(rawFile)
+
+        photo = rawFile + ".jpg" # photo name
+        user_dict['photo'] = photo # save photo name in dictionary
+
+        #print(user_dict['photo'])
+        #fileName = user_dict['chatID']
+        store = 'DownlodedPhotos/' + rawFile+".jpg" # photo path
+        file_info = bot.get_file(rawFile)  # photo description
+        #print(file_info)
+        downloadFile = bot.download_file(file_info.file_path) # download file like bytes
+        with open(store, "wb") as newFile:
+            newFile.write(downloadFile)
+        print("photo successfully added")
+    except Exception as ex:
+        print(ex)
     print("Got photo")
 
 """ regular menu """
@@ -112,6 +131,21 @@ def process_description_step(message):
         user_dict['chatID'] = chatID
         user_dict['desciption'] = description
 
+        msg = bot.send_message(message.chat.id, 'enter image:')
+        bot.register_next_step_handler(msg, process_photo_step)
+    except Exception as e:
+        bot.reply_to(message, 'oops')
+###########
+
+###########
+def process_photo_step(message):
+    try:
+        chatID = message.chat.id
+
+        user_dict['chatID'] = chatID
+
+        getImage(message)
+
         msg = bot.send_message(message.chat.id, 'Where are u from?')
         bot.register_next_step_handler(msg, process_city_step)
     except Exception as e:
@@ -161,6 +195,7 @@ def process_sex_step(message):
         user.city = user_dict['city']
         user.describe = user_dict['desciption']
         user.chatUsername = user_dict['chatUserame']
+        user.photoName = user_dict['photo']
 
         if (sex == u'Male') or (sex == u'Female'):
             print(user_dict)
@@ -170,14 +205,19 @@ def process_sex_step(message):
             raise Exception("Unknown sex")
 
         writing(user)
+        path = 'DownlodedPhotos/' + user_dict['photo']
+        with open(path, 'rb') as file:
+            bot.send_photo(message.chat.id, file)
+
         bot.send_message(user_dict['chatID'],
-                         'Nice to meet you, ' + user.name +
+                        'Nice to meet you, ' + user.name +
                          '\n Age: ' + str(user.age) +
                          '\n Sex: ' + user.sex +
                          '\n City: ' + user.city +
                          '\n Description: ' + user.describe)
 
     except Exception as e:
+        print(e)
         bot.reply_to(message, 'oooops')
 
 

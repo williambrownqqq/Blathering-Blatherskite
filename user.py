@@ -12,6 +12,7 @@ class User:
         self.city = None
         self.describe = None
         self.chatUsername = None
+        self.photoName = None
         User.counter += 1
 
     @property

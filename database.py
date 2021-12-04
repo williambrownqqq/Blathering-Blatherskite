@@ -101,6 +101,7 @@ def writing(myUser):
         description = myUser.describe
         chatUserame = myUser.chatUsername
         path = '1451232188.jpg'
+        path = 'DownlodedPhotos/' + myUser.photoName
 
 
 
