@@ -12,7 +12,10 @@ DATA_JSON = "data.json"
 @bot.message_handler(commands=['start'])  # начинаем
 def start(message):
     bot.send_sticker(message.chat.id, 'CAACAgIAAxkBAAEDUrphmCOr4kukL99zoy9Vop4nguUGqgACQAADOPCiGncMZgcCUVNuIgQ')
-
+    # alex
+    #fdsf
+    a = 2
+    a = 3
     markup_start_choice = types.ReplyKeyboardMarkup(resize_keyboard=True, row_width=2,
                                                     one_time_keyboard=True)  # задали формат кнопок
     yesbutton = types.KeyboardButton("Yes, i want")
