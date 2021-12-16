@@ -86,22 +86,34 @@ MyCursor = connectort.cursor()
 #     except Exception as ex:
 #         print("Connection refused!")
 #         print(ex)
+def checkuser(username):
+    try:
+        query = f"SELECT UserName FROM botuser WHERE UserChatUsername = %s"
+        MyCursor.execute(query, (username,))
 
+        rows = MyCursor.fetchall()
+        if rows:
+            return True
+        else:
+            return False
+    except Exception as ex:
+        print("Connection refused!")
+        print(ex)
+#def edit_user(myUser)
 def writing(myUser):
     try:
         # MyCursor = connectort.cursor()
-        print(connectort) # our object address
+        #print(connectort) # our object address
 
         nickname = myUser.name
-        id = myUser.idd # random.randint(0, 1000000)
+        id = myUser.idd
         #print("hi", id)
-        age =myUser.age
+        age = myUser.age
         sex = myUser.sex
         city = myUser.city
-        description = myUser.describe
-        chatUserame = myUser.chatUsername
-        path = '1451232188.jpg'
-        path = 'DownlodedPhotos/' + myUser.photoName
+        description = myUser.description
+        chatUsername = myUser.username
+        path = 'DownlodedPhotos/' + myUser.photo
 
 
 
@@ -111,7 +123,7 @@ def writing(myUser):
 
 
 
-        InsertPhoto(path, id, nickname, age, sex, city, description, chatUserame) # send data to database
+        InsertPhoto(path, id, nickname, age, sex, city, description, chatUsername) # send data to database
         TakePhoto(id) #back photo from database
 
         # #MyCursor.execute(botquery, user1)
@@ -125,14 +137,14 @@ def writing(myUser):
 
 
 
-def InsertPhoto(FilePath, id, nickname, age, sex, city, description, chatUsername):
+def InsertPhoto(FilePath, id, nickname, age, sex, city, description, username):
     try:
         with open(FilePath, 'rb') as File:
             BinaryData = File.read()
-        print(type(BinaryData))
+        #print(type(BinaryData))
 
         botquery = f"INSERT INTO botuser(ID, UserName, UserAge, UserSex, UserCity, UserPhoto, UserDescription, UserChatUsername) VALUES (%s, %s, %s, %s, %s, %s, %s, %s) "
-        data = (id, nickname, age, sex, city, BinaryData, description, chatUsername)
+        data = (id, nickname, age, sex, city, BinaryData, description, username)
         MyCursor.execute(botquery, data)
 
         # sqlQuery = f"INSERT INTO BotUser(UserPhoto) VALUES (%s) "
