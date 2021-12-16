@@ -15,7 +15,10 @@ def start(message):
     # alex
     #fdsf
     a = 2
+
     a = 3
+    a = 3 * 3
+    a = 3 * 3 - 3
     markup_start_choice = types.ReplyKeyboardMarkup(resize_keyboard=True, row_width=2,
                                                     one_time_keyboard=True)  # задали формат кнопок
     yesbutton = types.KeyboardButton("Yes, i want")
