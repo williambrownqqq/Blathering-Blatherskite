@@ -11,13 +11,13 @@ import io
 
 """ connection to pentagon database """
 
-connectort = mysql.connector.connect(
+Myconnector = mysql.connector.connect(
     host=host,
     user=user,
     password=password,
     database=dataBaseName,
 )
-MyCursor = connectort.cursor()
+MyCursor = Myconnector.cursor()
 
 
 # def writing(myUser):
@@ -102,33 +102,34 @@ def checkuser(username):
 #def edit_user(myUser)
 def writing(myUser):
     try:
-        # MyCursor = connectort.cursor()
-        #print(connectort) # our object address
-
         nickname = myUser.name
         id = myUser.idd
-        #print("hi", id)
         age = myUser.age
         sex = myUser.sex
         city = myUser.city
         description = myUser.description
-        chatUsername = myUser.username
+        chatusername = myUser.username
         path = 'DownlodedPhotos/' + myUser.photo
-
+        with open(path, 'rb') as File:
+            BinaryData = File.read()
+        if checkuser(chatusername):
+            botquery = f"UPDATE botuser SET UserName = %s, UserAge = %s, UserSex =  %s, UserCity =  %s, UserPhoto = %s, UserDescription = %s WHERE ID = %s "
+            data = (nickname, age, sex, city, BinaryData, description, id)
+        else:
+            botquery = f"INSERT INTO botuser(ID, UserName, UserAge, UserSex, UserCity, UserPhoto, UserDescription, UserChatUsername) VALUES (%s, %s, %s, %s, %s, %s, %s, %s) "
+            data = (id, nickname, age, sex, city, BinaryData, description, chatusername)
+        MyCursor.execute(botquery, data)
 
 
         #botquery = f"INSERT INTO botuser(ID, UserName, UserAge, UserSex, UserCity) VALUES (%s, %s, %s, %s, %s) "
         #user1 = (id, nickname, age, sex, city)
         # imagequery = f"INSERT INTO BotUser(UserPhoto) VALUES (%s)"
-
-
-
-        InsertPhoto(path, id, nickname, age, sex, city, description, chatUsername) # send data to database
-        TakePhoto(id) #back photo from database
+        #InsertPhoto(path, id, nickname, age, sex, city, description, chatUsername) # send data to database
+        #TakePhoto(id) #back photo from database
 
         # #MyCursor.execute(botquery, user1)
         # MyCursor.execute(imagequery, (byte_im,))
-        connectort.commit()
+        Myconnector.commit()
         # RetriveBlob(id)
         print("Successfully connect!")
     except Exception as ex:
@@ -149,7 +150,7 @@ def InsertPhoto(FilePath, id, nickname, age, sex, city, description, username):
 
         # sqlQuery = f"INSERT INTO BotUser(UserPhoto) VALUES (%s) "
         # MyCursor.execute(sqlQuery, (BinaryData, ))
-        connectort.commit()
+        Myconnector.commit()
     except Exception as error:
         print("Failed to put a photo from table", error)
 

@@ -37,7 +37,7 @@ def getText(message):
     elif message.text == "No, i won't":
         bot.send_message(message.chat.id, "exit")  # доделать
         backMenu(message)
-    elif message.text == 'Create profile':  # create profile
+    elif message.text == 'Create profile' or message.text == 'Edit my profile':  # create profile
         registration = UserRegistration()
         registration.create_user(message)# from registration module
     elif message.text == 'Menu':
