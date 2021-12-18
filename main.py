@@ -1,11 +1,10 @@
 from batya import bot
 from telebot import types
 #import registration # registration module
-from userRegistration import create_user, log_user
-from user import User  # user definition
+from userRegistration import UserRegistration
 from database import *
 
-user_dict = {}
+#user_dict = {}
 DATA_JSON = "data.json"
 
 
@@ -39,7 +38,8 @@ def getText(message):
         bot.send_message(message.chat.id, "exit")  # доделать
         backMenu(message)
     elif message.text == 'Create profile':  # create profile
-        create_user(message) # from registration module
+        registration = UserRegistration()
+        registration.create_user(message)# from registration module
     elif message.text == 'Menu':
         menustarter(message)
 
