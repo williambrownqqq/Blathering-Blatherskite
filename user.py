@@ -2,11 +2,8 @@
 
 
 class User:
-    counter = 0
-
     def __init__(self, idd):
         self.idd = idd
-        User.counter += 1
 
     @property
     def age(self):
@@ -81,8 +78,7 @@ class User:
         self.__photo = name
 
     def __str__(self):
-        return f"\tUser №{User.counter}\n" \
-               f"ID:    {self.idd}\n" \
+        return f"ID:    {self.idd}\n" \
                f"name:  {self.name}\n" \
                f"age:   {self.age}\n" \
                f"sex:   {self.sex}\n" \

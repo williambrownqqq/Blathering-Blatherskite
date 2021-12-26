@@ -2,6 +2,8 @@ from batya import bot
 from telebot import types
 from user import User
 from database import writing
+
+
 class UserRegistration:
 
     @property
@@ -22,14 +24,14 @@ class UserRegistration:
         self.user.username = message.chat.username
         bot.register_next_step_handler(name, self.process_name_step)
 
+    # noinspection PyBroadException
     def process_name_step(self, message):
         try:
             self.user.name = message.text
             msg = bot.send_message(message.chat.id, 'Write something about u')
             bot.register_next_step_handler(msg, self.process_description_step)
-        except Exception as e:
+        except Exception:
             bot.reply_to(message, 'oops')
-
 
     ##############
     def process_description_step(self, message):
@@ -43,26 +45,29 @@ class UserRegistration:
     ###########
 
     ###########
+    # noinspection PyBroadException
     def process_photo_step(self, message):
         try:
-            self.getImage(message)
+            self.get_image(message)
             msg = bot.send_message(message.chat.id, 'Where are u from?')
             bot.register_next_step_handler(msg, self.process_city_step)
-        except Exception as e:
+        except Exception:
             bot.reply_to(message, 'oops')
     ###########
+
+    # noinspection PyBroadException
     def process_city_step(self, message):
         try:
             try:
                 self.user.city = message.text
-            except (TypeError):
+            except TypeError:
                 msg = bot.send_message(message.chat.id, 'Age should be a string. Where do you live?')
                 bot.register_next_step_handler(msg, self.process_city_step)
                 return
 
             msg = bot.send_message(message.chat.id, 'How old are you?')
             bot.register_next_step_handler(msg, self.process_age_step)
-        except Exception as e:
+        except Exception:
             bot.reply_to(message, 'oops')
 
     def process_age_step(self, message):
@@ -110,22 +115,22 @@ class UserRegistration:
             print(e)
             bot.reply_to(message, 'oooops')
 
-    def getImage(self, message):
+    def get_image(self, message):
         try:
-            rawFile = message.photo[2].file_id # photo id
-            #print(rawFile)
+            raw_file = message.photo[2].file_id  # photo id
+            # print(rawFile)
 
-            photo = rawFile + ".jpg" # photo name
-            self.user.photo = photo # save photo name in dictionary
+            photo = raw_file + ".jpg"  # photo name
+            self.user.photo = photo  # save photo name in dictionary
 
-            #print(user_dict['photo'])
-            #fileName = user_dict['chatID']
-            store = 'DownlodedPhotos/' + rawFile+".jpg" # photo path
-            file_info = bot.get_file(rawFile)  # photo description
-            #print(file_info)
-            downloadFile = bot.download_file(file_info.file_path) # download file like bytes
+            # print(user_dict['photo'])
+            # fileName = user_dict['chatID']
+            store = 'DownlodedPhotos/' + raw_file + ".jpg"  # photo path
+            file_info = bot.get_file(raw_file)  # photo description
+            # print(file_info)
+            download_file = bot.download_file(file_info.file_path)  # download file like bytes
             with open(store, "wb") as newFile:
-                newFile.write(downloadFile)
+                newFile.write(download_file)
             print("photo successfully added")
         except Exception as ex:
             print(ex)

@@ -1,13 +1,14 @@
-import random
-from getpass import getpass
-import pymysql
+# import random
+# from getpass import getpass
+# import pymysql
 # from mysql.connector import connect
 import mysql.connector
 from databaseConfig import host, user, password, dataBaseName
-from PIL import Image
-import sqlite3
-import cv2
-import io
+from batya import bot
+# from PIL import Image
+# import sqlite3
+# import cv2
+# import io
 
 """ connection to pentagon database """
 
@@ -86,6 +87,8 @@ MyCursor = Myconnector.cursor()
 #     except Exception as ex:
 #         print("Connection refused!")
 #         print(ex)
+
+
 def checkuser(username):
     try:
         query = f"SELECT UserName FROM botuser WHERE UserChatUsername = %s"
@@ -99,7 +102,11 @@ def checkuser(username):
     except Exception as ex:
         print("Connection refused!")
         print(ex)
-#def edit_user(myUser)
+
+
+# def edit_user(myUser)
+
+
 def writing(myUser):
     try:
         nickname = myUser.name
@@ -162,13 +169,15 @@ def TakePhoto(id):
         MyResult = MyCursor.fetchone()[4]
         print(type(MyResult))
         store = "ImageOutputs/img{0}.jpg".format(str(id))
-        #print(MyResult)
+        # print(MyResult)
         with open(store, "wb") as file:
             print(type(MyResult))
-            file.write(MyResult) # works with bytes
+            file.write(MyResult)  # works with bytes
             file.close()
     except Exception as error:
         print("Failed to grab the photo from table", error)
+
+
 
 
 # def RetriveBlob(id):
@@ -210,3 +219,5 @@ def TakePhoto(id):
 
 
 #writing(user)
+
+
