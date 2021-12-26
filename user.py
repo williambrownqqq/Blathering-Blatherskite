@@ -13,7 +13,7 @@ class User:
     def age(self, age):
         if not isinstance(age, int):
              raise TypeError("Must be int!")
-        if not 14<age<100:
+        if not 14 < age < 100:
              raise ValueError("Must be higher than 14 and lower than 100")
         self.__age = age
 

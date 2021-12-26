@@ -127,7 +127,8 @@ def TakeAcc(message):
      #               print(type(MyResult))
       #              file.write(MyResult)  # works with bytes
        #             file.close()
-                msg = bot.send_message(message.chat.id, f'{result[0]}, {result[1]}, {result[2]}, {result[3]}')
+                msg = bot.send_message(message.chat.id, f'[{result[0]}](t.me/{result[7]}), {result[1]}, {result[2]}, '
+                                                        f'{result[3]}', parse_mode='Markdown')
             else:
                 msg = bot.send_message(message.chat.id, f'No {message.text} in our bot, this is a gay-party')
 
