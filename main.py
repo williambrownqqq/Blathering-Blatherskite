@@ -110,7 +110,7 @@ def find_menu(message):
 def TakeAcc(message):
     try:
         if message.text == "Menu":
-            bot.register_next_step_handler(message, menu_starter)
+            menu_starter(message)
         else:
             sqlQuery = f'SELECT * FROM BotUser WHERE UserSex = "{message.text}" and id != {message.chat.id}' \
                        f' order by rand() LIMIT 1;'
