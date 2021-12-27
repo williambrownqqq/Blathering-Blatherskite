@@ -43,12 +43,33 @@ def get_text(message):
         registration.create_user(message)  # from registration module
     elif message.text == 'Menu':
         menu_starter(message)
-    elif message.text == 'Start':
+    elif message.text == 'Start' or message.text == 'Continue':
         find_menu(message)
+    elif message.text == 'Stop':
+        stopaction(message)
     elif message.text == 'Male' or message.text == 'Female':
         TakeAcc(message)
 
 
+
+def stopaction(message):
+    try:
+        id = message.chat.id
+        active = 0
+        botquery = f"UPDATE botuser SET Active = %s WHERE ID = %s "
+        data = (active, id)
+        MyCursor.execute(botquery, data)
+        Myconnector.commit()
+        print("Successfully connect!")
+    except Exception as ex:
+        print("Connection refused!")
+        print(ex)
+
+    stopMenu = types.ReplyKeyboardMarkup(resize_keyboard=True, row_width=3, one_time_keyboard=True)
+    continueButton = types.KeyboardButton("Continue")
+    stopMenu.add(continueButton)
+    bot.send_message(message.chat.id, f"We will miss u!",
+                     reply_markup=stopMenu)
 # @bot.message_handler(content_types= ['photo'])
 
 """ regular menu """
@@ -95,6 +116,18 @@ def back_menu(message):
 
 
 def find_menu(message):
+    try:
+        id = message.chat.id
+        active = 1
+        botquery = f"UPDATE botuser SET Active = %s WHERE ID = %s "
+        data = (active, id)
+        MyCursor.execute(botquery, data)
+        Myconnector.commit()
+        print("Successfully connect!")
+    except Exception as ex:
+        print("Connection refused!")
+        print(ex)
+
     markup_back = types.ReplyKeyboardMarkup(resize_keyboard=True, row_width=3)  # задали формат кнопок
     print("OK")
     back_button = types.KeyboardButton("Menu")
