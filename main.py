@@ -148,7 +148,7 @@ def TakeAcc(message):
             menu_starter(message)
         else:
             sqlQuery = f'SELECT * FROM BotUser WHERE UserSex = "{message.text}" and id != {message.chat.id}' \
-                       f' order by rand() LIMIT 1;'
+                       f' and Active = 1 order by rand() LIMIT 1;'
             MyCursor.execute(sqlQuery)
             result = MyCursor.fetchone()
             if result:
