@@ -72,10 +72,10 @@ class User:
         return self.__photo
 
     @photo.setter
-    def photo(self, name):
-        if not isinstance(name, str):
+    def photo(self, path):
+        if not isinstance(path, str):
             raise TypeError("Must be string")
-        self.__photo = name
+        self.__photo = path
 
     def __str__(self):
         return f"ID:    {self.idd}\n" \

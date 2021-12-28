@@ -36,8 +36,13 @@ def get_text(message):
     if message.text == 'Yes, i want':  # c кнопки старта переходим в меню
         menu_starter(message)
     elif message.text == "No, i won't":
-        bot.send_message(message.chat.id, "exit")  # доделать
-        back_menu(message)
+        # bot.send_message(message.chat.id, "exit")  # доделать
+        # back_menu(message)
+        stopMenu = types.ReplyKeyboardMarkup(resize_keyboard=True, row_width=3, one_time_keyboard=True)
+        continueButton = types.KeyboardButton("Continue registration")
+        stopMenu.add(continueButton)
+        bot.send_message(message.chat.id, f"We will miss u!",
+                         reply_markup=stopMenu)
     elif message.text == 'Create profile' or message.text == 'Edit my profile':  # create profile
         registration = UserRegistration()
         registration.create_user(message)  # from registration module
@@ -45,6 +50,8 @@ def get_text(message):
         menu_starter(message)
     elif message.text == 'Start' or message.text == 'Continue':
         find_menu(message)
+    elif message.text == 'Continue registration':
+        menu_starter(message)
     elif message.text == 'Stop':
         stopaction(message)
     elif message.text == 'Male' or message.text == 'Female':
@@ -117,11 +124,14 @@ def back_menu(message):
 
 def find_menu(message):
     try:
+        botquery = f"ALTER TABLE botuser ALTER Active SET DEFAULT 1;"
+        MyCursor.execute(botquery)
         id = message.chat.id
         active = 1
         botquery = f"UPDATE botuser SET Active = %s WHERE ID = %s "
         data = (active, id)
         MyCursor.execute(botquery, data)
+
         Myconnector.commit()
         print("Successfully connect!")
     except Exception as ex:
@@ -309,7 +319,6 @@ class UserRegistration:
             print("photo successfully added")
         except Exception as ex:
             print(ex)
-        print("Got photo")
 
 
 
