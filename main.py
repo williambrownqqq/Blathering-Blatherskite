@@ -1,3 +1,5 @@
+#! /usr/bin/env python
+# -*- coding: utf-8 -*-
 from batya import bot
 from telebot import types
 # import registration # registration module
