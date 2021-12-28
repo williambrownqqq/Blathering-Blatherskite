@@ -6,6 +6,19 @@ class User:
         self.idd = idd
 
     @property
+    def photoiID(self):
+        return self.__photoiID
+
+    @photoiID.setter
+    def photoiID(self, photoiID):
+        if photoiID is None:
+            raise Exception("Mustn't be empty!")
+        if not isinstance(photoiID, str):
+            raise Exception("Must be str!")
+        self.__photoiID = photoiID
+
+
+    @property
     def age(self):
         return self.__age
 
@@ -23,8 +36,11 @@ class User:
 
     @name.setter
     def name(self, name):
-        if not isinstance(name, str):
-            raise TypeError("Must be string")
+        if name:
+            if not isinstance(name, str):
+                raise Exception("Must be string")
+            elif not name.isalpha():
+                raise Exception("Must be letters")
         self.__name = name
 
     @property
@@ -54,7 +70,9 @@ class User:
     @city.setter
     def city(self, city):
         if not isinstance(city, str):
-            raise TypeError("City must be str!")
+            raise Exception("City must be str!")
+        elif not city.isalpha():
+            raise Exception("City be letters")
         self.__city = city
 
     @property
