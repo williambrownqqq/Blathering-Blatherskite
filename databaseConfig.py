@@ -1,4 +1,4 @@
 host = "localhost"
-user = "root"
-password = "1111"
+user = "yehor"
+password = "password"
 dataBaseName = "pentagon"
