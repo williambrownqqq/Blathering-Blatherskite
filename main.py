@@ -44,20 +44,11 @@ def get_text(message):
         continueButton = types.KeyboardButton("Continue registration")
         stopMenu.add(continueButton)
         bot.send_message(message.chat.id, 'We will miss u!', reply_markup=stopMenu)
-    elif message.text == 'Create profile' or message.text == 'Edit my profile':  # create profile
-        registration = UserRegistration()
-        registration.create_user(message)  # from registration module
-    elif message.text == 'Menu':
-        menu_starter(message)
-    elif message.text == 'Start' or message.text == 'Continue':
-        find_menu(message)
     elif message.text == 'Continue registration':
         menu_starter(message)
-    elif message.text == 'Stop':
-        stopaction(message)
-    elif message.text == 'Male' or message.text == 'Female':
-        TakeAcc(message)
-
+    else:
+        bot.send_message(message.chat.id, "Some went wrong")
+        back_menu(message)
 
 
 def stopaction(message):
@@ -76,9 +67,12 @@ def stopaction(message):
     stopMenu = types.ReplyKeyboardMarkup(resize_keyboard=True, row_width=3, one_time_keyboard=True)
     continueButton = types.KeyboardButton("Continue")
     stopMenu.add(continueButton)
-    bot.send_message(message.chat.id, f"We will miss u!",
+    msg = bot.send_message(message.chat.id, f"We will miss u!",
                      reply_markup=stopMenu)
+    bot.register_next_step_handler(msg, find_menu)
 # @bot.message_handler(content_types= ['photo'])
+
+
 
 """ regular menu """
 
@@ -95,8 +89,9 @@ def guest_menu(message):
     profile_button = types.KeyboardButton("Create profile")
     stop_button = types.KeyboardButton("Stop")
     markup_menu.add(profile_button, stop_button)
-    bot.send_message(message.chat.id, f"Choose your option",
+    msg = bot.send_message(message.chat.id, f"Choose your option",
                      reply_markup=markup_menu)
+    bot.register_next_step_handler(msg, guest_menu_text)
 
 
 def logged_menu(message):
@@ -105,8 +100,35 @@ def logged_menu(message):
     edit_button = types.KeyboardButton("Edit my profile")
     stop_button = types.KeyboardButton("Stop")
     markup_menu.add(start_button, edit_button, stop_button)
-    bot.send_message(message.chat.id, f"Choose your option",
-                     reply_markup=markup_menu)
+    msg = bot.send_message(message.chat.id, f"Choose your option",
+                           reply_markup=markup_menu)
+    bot.register_next_step_handler(msg, logged_menu_text)
+
+
+def guest_menu_text(message):
+    if message.text == 'Create profile':  # create profile
+        registration = UserRegistration()
+        registration.create_user(message)  # from registration module
+    elif message.text == 'Stop':
+        stopaction(message)
+    else:
+        bot.send_message(message.chat.id, "Incorrect input")
+        bot.register_next_step_handler(message, guest_menu_text)
+
+
+def logged_menu_text(message):
+    print("guest menu")
+    if message.text == "Start":
+        find_menu(message)
+    elif message.text == 'Edit my profile':  # create profile
+        registration = UserRegistration()
+        registration.create_user(message)  # from registration module
+    elif message.text == 'Stop':
+        stopaction(message)
+    else:
+        bot.send_message(message.chat.id, "Incorrect input")
+        bot.register_next_step_handler(message, guest_menu_text)
+
 
 
 """ Menu after u don't want continue"""
@@ -119,14 +141,13 @@ def back_menu(message):
 
     markup_back.add(back_button)  # добавили кнопки
 
-    bot.send_message(message.chat.id, "hope u find a friend",
+    msg = bot.send_message(message.chat.id, "hope u find a friend",
                      reply_markup=markup_back)  # подвязали кнопки к сообщению
+    bot.register_next_step_handler(msg, menu_starter)
 
 
 def find_menu(message):
     try:
-        botquery = f"ALTER TABLE botuser ALTER Active SET DEFAULT 1;"
-        MyCursor.execute(botquery)
         id = message.chat.id
         active = 1
         botquery = f"UPDATE botuser SET Active = %s WHERE ID = %s "
@@ -145,12 +166,12 @@ def find_menu(message):
     button1 = types.KeyboardButton("Male")
     button2 = types.KeyboardButton("Female")
     markup_back.add(back_button, button1, button2)
-    bot.send_message(message.chat.id, f"Choose your option",
+    msg = bot.send_message(message.chat.id, f"Choose your option",
                      reply_markup=markup_back)
+    bot.register_next_step_handler(msg, TakeAcc)
 
 # def log_user(message):
 #    global user
-
 
 
 def TakeAcc(message):
@@ -316,7 +337,7 @@ class UserRegistration:
             menu_starter(message)
         except Exception as ex:
             print(ex)
-            bot.reply_to(message, 'oooops')
+            bot.reply_to(message, 'Wrong')
 
     def get_image(self, message):
         try:
