@@ -43,8 +43,7 @@ def get_text(message):
         stopMenu = types.ReplyKeyboardMarkup(resize_keyboard=True, row_width=3, one_time_keyboard=True)
         continueButton = types.KeyboardButton("Continue registration")
         stopMenu.add(continueButton)
-        bot.send_message(message.chat.id, f"We will miss u!",
-                         reply_markup=stopMenu)
+        bot.send_message(message.chat.id, 'We will miss u!', reply_markup=stopMenu)
     elif message.text == 'Create profile' or message.text == 'Edit my profile':  # create profile
         registration = UserRegistration()
         registration.create_user(message)  # from registration module
