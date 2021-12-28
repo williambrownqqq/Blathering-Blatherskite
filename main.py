@@ -21,17 +21,9 @@ def start(message):
     no_button = types.KeyboardButton("No, i won't")
     markup_start_choice.add(yes_button, no_button)  # добавили кнопки
 
-    bot.send_message(message.chat.id, "Привет, начнем?",
+    bot.send_message(message.chat.id, "Hi, let's start?",
                      reply_markup=markup_start_choice)  # подвязали кнопки к сообщению
 
-
-# @bot.callback_query_handler(func=lambda call: True)
-# def answer(call):
-#     if call.data == "Yes, i want":
-#         bot.send_message(call.message.chat.id, "halo")
-#
-#     elif call.data == 'no':
-#         pass
 
 @bot.message_handler(content_types=['text'])  # обрабатываем кнопки клавиатуры
 def get_text(message):
@@ -70,9 +62,6 @@ def stopaction(message):
     msg = bot.send_message(message.chat.id, f"We will miss u!",
                      reply_markup=stopMenu)
     bot.register_next_step_handler(msg, find_menu)
-# @bot.message_handler(content_types= ['photo'])
-
-
 
 """ regular menu """
 
@@ -83,7 +72,6 @@ def menu_starter(message):
     else:
         guest_menu(message)
 
-
 def guest_menu(message):
     markup_menu = types.ReplyKeyboardMarkup(resize_keyboard=True, row_width=3, one_time_keyboard=True)
     profile_button = types.KeyboardButton("Create profile")
@@ -92,7 +80,6 @@ def guest_menu(message):
     msg = bot.send_message(message.chat.id, f"Choose your option",
                      reply_markup=markup_menu)
     bot.register_next_step_handler(msg, guest_menu_text)
-
 
 def logged_menu(message):
     markup_menu = types.ReplyKeyboardMarkup(resize_keyboard=True, row_width=3, one_time_keyboard=True)
@@ -104,7 +91,6 @@ def logged_menu(message):
                            reply_markup=markup_menu)
     bot.register_next_step_handler(msg, logged_menu_text)
 
-
 def guest_menu_text(message):
     if message.text == 'Create profile':  # create profile
         registration = UserRegistration()
@@ -114,7 +100,6 @@ def guest_menu_text(message):
     else:
         bot.send_message(message.chat.id, "Incorrect input")
         bot.register_next_step_handler(message, guest_menu_text)
-
 
 def logged_menu_text(message):
     print("guest menu")
@@ -129,11 +114,7 @@ def logged_menu_text(message):
         bot.send_message(message.chat.id, "Incorrect input")
         bot.register_next_step_handler(message, guest_menu_text)
 
-
-
 """ Menu after u don't want continue"""
-
-
 def back_menu(message):
     markup_back = types.ReplyKeyboardMarkup(resize_keyboard=True, row_width=1,
                                             one_time_keyboard=True)  # задали формат кнопок
@@ -144,7 +125,6 @@ def back_menu(message):
     msg = bot.send_message(message.chat.id, "hope u find a friend",
                      reply_markup=markup_back)  # подвязали кнопки к сообщению
     bot.register_next_step_handler(msg, menu_starter)
-
 
 def find_menu(message):
     try:
@@ -169,10 +149,6 @@ def find_menu(message):
     msg = bot.send_message(message.chat.id, f"Choose your option",
                      reply_markup=markup_back)
     bot.register_next_step_handler(msg, TakeAcc)
-
-# def log_user(message):
-#    global user
-
 
 def TakeAcc(message):
     try:
@@ -208,8 +184,6 @@ def TakeAcc(message):
     except Exception as error:
         print("Failed to grab the photo from table", error)
 
-
-
 class UserRegistration:
 
     @property
@@ -222,10 +196,10 @@ class UserRegistration:
             raise TypeError("Must be User!")
         self.__user = user
 
-    """ Pегистрация """
+    """ registration """
     def create_user(self, message):
         try:
-            name = bot.send_message(message.chat.id, 'Введи имя')
+            name = bot.send_message(message.chat.id, 'enter a name')
             self.user = User(message.chat.id)
             self.user.username = message.chat.username
             bot.register_next_step_handler(name, self.process_name_step)
@@ -233,7 +207,6 @@ class UserRegistration:
             print(ex)
 
 
-    # noinspection PyBroadException
     def process_name_step(self, message):
         try:
             try:
@@ -248,7 +221,6 @@ class UserRegistration:
             print(ex)
             bot.reply_to(message, 'oops')
 
-    ##############
     def process_description_step(self, message):
         try:
             try:
@@ -262,9 +234,7 @@ class UserRegistration:
         except Exception as ex:
             print(ex)
             bot.reply_to(message, 'oops')
-    ###########
 
-    # noinspection PyBroadException
     def process_photo_step(self, message):
         try:
             try:
@@ -274,19 +244,17 @@ class UserRegistration:
                 msg = bot.send_message(message.chat.id, 'Upload photo again')
                 bot.register_next_step_handler(msg, self.process_photo_step)
                 return
-            msg = bot.send_message(message.chat.id, 'Where are yo from?')
+            msg = bot.send_message(message.chat.id, 'Where are you studying?')
             bot.register_next_step_handler(msg, self.process_city_step)
         except Exception as ex:
             print(f"ex {ex}")
-    ###########
 
-    # noinspection PyBroadException
     def process_city_step(self, message):
         try:
             try:
                 self.user.city = message.text
             except Exception :
-                msg = bot.send_message(message.chat.id, 'Age should be a string. Where do you live?')
+                msg = bot.send_message(message.chat.id, 'University should be a string. Where are you studying?')
                 bot.register_next_step_handler(msg, self.process_city_step)
                 return
 
@@ -342,15 +310,7 @@ class UserRegistration:
     def get_image(self, message):
         try:
             try:
-                # print("yyyy")
-                # if message.photo is None:
-                #     print("dddd")
-                #     Exception("file id empty")
-
-                # print(type(message.photo))
-                # raw_file = message.photo[2].file_id  # photo id
                 print("message.photo[2].file_id  ", message.photo[2].file_id)
-
                 photo = self.user.photoiID + ".jpg"  # photo name
                 self.user.photo = photo  # save photo name in dictionary
             except Exception as ex:
@@ -358,10 +318,7 @@ class UserRegistration:
                 msg = bot.send_message(message.chat.id, 'Something went wrong. Upload photo again. ')
                 bot.register_next_step_handler(msg, self.process_photo_step)
                 return
-            # print(rawFile)
 
-            # print(user_dict['photo'])
-            # fileName = user_dict['chatID']
             store = 'DownlodedPhotos/' + self.user.photoiID + ".jpg"  # photo path
             file_info = bot.get_file(self.user.photoiID)  # photo description
             # print(file_info)
@@ -373,9 +330,8 @@ class UserRegistration:
             print(ex)
 
 
-
 if __name__ == '__main__':
     bot.polling(none_stop=True)
 
-bot.polling(none_stop=True)
+#bot.polling(none_stop=True)
 
