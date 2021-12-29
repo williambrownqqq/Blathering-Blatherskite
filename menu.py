@@ -154,7 +154,7 @@ def TakeAcc(message):
                 text = "Female"
             else:
                 bot.send_message(message.chat.id, 'Press buttons')
-            sqlQuery = f'SELECT * FROM BotUser WHERE UserSex = "{text}" and id != {message.chat.id}' \
+            sqlQuery = f'SELECT * FROM botuser WHERE UserSex = "{text}" and id != {message.chat.id}' \
                        f' and Active = 1 order by rand() LIMIT 3;'
             MyCursor.execute(sqlQuery)
             result = MyCursor.fetchone()
