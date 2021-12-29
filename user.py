@@ -11,10 +11,10 @@ class User:
 
     @photoiID.setter
     def photoiID(self, photoiID):
-        if photoiID is None:
-            raise Exception("Mustn't be empty!")
         if not isinstance(photoiID, str):
-            raise Exception("Must be str!")
+            raise TypeError("Must be str!")
+        if photoiID is None:
+            raise ValueError("Mustn't be empty!")
         self.__photoiID = photoiID
 
 
@@ -38,9 +38,9 @@ class User:
     def name(self, name):
         if name:
             if not isinstance(name, str):
-                raise Exception("Must be string")
+                raise TypeError("Must be string")
             elif not name.isalpha():
-                raise Exception("Must be letters")
+                raise ValueError("Must be letters")
         self.__name = name
 
     @property
@@ -64,16 +64,16 @@ class User:
         self.__username = username
 
     @property
-    def city(self):
+    def university(self):
         return self.__city
 
-    @city.setter
-    def city(self, city):
-        if not isinstance(city, str):
-            raise Exception("City must be str!")
-        elif not city.isalpha():
-            raise Exception("City be letters")
-        self.__city = city
+    @university.setter
+    def university(self, university):
+        if not isinstance(university, str):
+            raise TypeError("university must be str!")
+        elif not university.isalpha():
+            raise ValueError("university be letters")
+        self.__city = university
 
     @property
     def description(self):
@@ -100,5 +100,5 @@ class User:
                f"name:  {self.name}\n" \
                f"age:   {self.age}\n" \
                f"sex:   {self.sex}\n" \
-               f"city   {self.city}\n" \
+               f"university   {self.university}\n" \
                f"description: {self.description}\n"
