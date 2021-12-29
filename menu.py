@@ -24,6 +24,9 @@ def start(message):
 
 @bot.message_handler(content_types=['text'])  # обрабатываем кнопки клавиатуры
 def get_text(message):
+    """
+    message handler for messages without handler
+    """
     if message.text == 'Yes, i want':  # c кнопки старта переходим в меню
         menu_starter(message)
     elif message.text == "No, i won't":
@@ -42,6 +45,7 @@ def get_text(message):
 
 @bot.message_handler(commands=['stop'])
 def stop_actions(message):
+    """message handler for /stop command"""
     try:
         set_active(0, message.chat.id)
         print("Successfully connect!")
@@ -61,6 +65,9 @@ def stop_actions(message):
 
 
 def menu_starter(message):
+    """
+    function to define menu type for user
+    """
     if check_user(message.chat.username):
         logged_menu(message)
     else:
@@ -68,6 +75,9 @@ def menu_starter(message):
 
 
 def guest_menu(message):
+    """
+    menu for guests or people without acc
+    """
     markup_menu = types.ReplyKeyboardMarkup(resize_keyboard=True, row_width=3, one_time_keyboard=True)
     profile_button = types.KeyboardButton("Create profile")
     stop_button = types.KeyboardButton("Stop")
@@ -78,6 +88,9 @@ def guest_menu(message):
 
 
 def logged_menu(message):
+    """
+    menu for users or people with acc
+    """
     markup_menu = types.ReplyKeyboardMarkup(resize_keyboard=True, row_width=3, one_time_keyboard=True)
     start_button = types.KeyboardButton("Find someone")
     edit_button = types.KeyboardButton("Edit my profile")
@@ -89,6 +102,9 @@ def logged_menu(message):
 
 
 def guest_menu_text(message):
+    """
+    handler for message from guest menu
+    """
     if message.text == 'Create profile':  # create profile
         registration = UserRegistration()
         registration.create_user(message)  # from registration module
@@ -100,6 +116,9 @@ def guest_menu_text(message):
 
 
 def logged_menu_text(message):
+    """
+    handler for message from logged menu
+    """
     print("guest menu")
     if message.text == "Find someone":
         find_menu(message)
@@ -117,6 +136,9 @@ def logged_menu_text(message):
 
 
 def back_menu(message):
+    """
+    menu for back from non active status
+    """
     markup_back = types.ReplyKeyboardMarkup(resize_keyboard=True, row_width=1,
                                             one_time_keyboard=True)  # задали формат кнопок
     back_button = types.KeyboardButton("Menu")
@@ -129,6 +151,9 @@ def back_menu(message):
 
 
 def find_menu(message):
+    """
+    menu to find people
+    """
     try:
         set_active(1, message.chat.id)
         print("Successfully connect!")
@@ -147,6 +172,9 @@ def find_menu(message):
 
 
 def take_account(message):
+    """
+    handler to message from find menu and find people
+    """
     try:
         if message.text == "Menu":
             menu_starter(message)
@@ -157,6 +185,7 @@ def take_account(message):
                 sex = "Female"
             else:
                 bot.send_message(message.chat.id, 'Press buttons')
+                sex = message.text
             result = find_user(sex, message.chat.id)
             if result:
                 print(result[3])
@@ -167,8 +196,8 @@ def take_account(message):
                     file.write(image_output)  # works with bytes
                     file.close()
                 with open(store, 'rb') as file:
-                    msg = bot.send_photo(message.chat.id, file, caption=f'[{result[0]}](t.me/{result[7]}), {result[1]}, '
-                                         f'{result[2]}, {result[3]}', parse_mode='Markdown')
+                    msg = bot.send_photo(message.chat.id, file, caption=f'[{result[0]}](t.me/{result[7]}), {result[1]},'
+                                         f' {result[2]}, {result[3]}', parse_mode='Markdown')
                 try:
                     os.remove(store)
                 except OSError:
