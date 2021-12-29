@@ -37,7 +37,7 @@ def writing(myUser):
         university = myUser.university
         description = myUser.description
         chatusername = myUser.username
-        path = 'DownlodedPhotos/' + myUser.photo
+        path = 'DownloadedPhotos/' + myUser.photo
         with open(path, 'rb') as File:
             BinaryData = File.read()
         if checkuser(chatusername):

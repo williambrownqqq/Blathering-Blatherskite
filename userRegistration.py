@@ -125,7 +125,7 @@ class UserRegistration:
     def process_saveall_step(self, message):
         try:
             writing(self.user)
-            path = 'DownlodedPhotos/' + self.user.photo
+            path = 'DownloadedPhotos/' + self.user.photo
             with open(path, 'rb') as file:
                 bot.send_photo(message.chat.id, file)
             bot.send_message(self.user.idd, self.user)
@@ -146,7 +146,7 @@ class UserRegistration:
                 bot.register_next_step_handler(msg, self.process_photo_step)
                 return
 
-            store = 'DownlodedPhotos/' + self.user.photoiID + ".jpg"  # photo path
+            store = 'DownloadedPhotos/' + self.user.photoiID + ".jpg"  # photo path
             file_info = bot.get_file(self.user.photoiID)  # photo description
             download_file = bot.download_file(file_info.file_path)  # download file like bytes
             with open(store, "wb") as newFile:
