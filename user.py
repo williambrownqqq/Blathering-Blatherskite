@@ -2,6 +2,18 @@
 
 
 class User:
+    """
+    User class
+    attributes:
+    idd: id of telegram acc
+    photo_id: id of the photo
+    age: but this is age
+    name: name of new user
+    sex: arrr, all good only male or female
+    username: telegram username of new user
+    university: place of study, KPI forever
+    description: description of new acc in bot
+    """
     def __init__(self, idd):
         self.idd = idd
 
