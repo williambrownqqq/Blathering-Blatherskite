@@ -70,8 +70,8 @@ class User:
     def university(self, university):
         if not isinstance(university, str):
             raise TypeError("university must be str!")
-        elif not university.isalpha():
-            raise ValueError("university be letters")
+        elif not 0 < len(university) < 255:
+            raise ValueError("university must be between 0 and 255 symbols long")
         self.__city = university
 
     @property

@@ -81,6 +81,10 @@ class UserRegistration:
                 msg = bot.send_message(message.chat.id, 'University should be a string. Where are you studying?')
                 bot.register_next_step_handler(msg, self.process_university_step)
                 return
+            except ValueError:
+                msg = bot.send_message(message.chat.id, 'University should contain only letters. Where are you studying?')
+                bot.register_next_step_handler(msg, self.process_university_step)
+                return
 
             msg = bot.send_message(message.chat.id, 'How old are you?')
             bot.register_next_step_handler(msg, self.process_age_step)
