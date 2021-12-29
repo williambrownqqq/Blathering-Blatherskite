@@ -54,7 +54,7 @@ def stopaction(message):
     stopMenu.add(continueButton)
     msg = bot.send_message(message.chat.id, f"Now you are invisible for others. We will miss u!",
                      reply_markup=stopMenu)
-    bot.register_next_step_handler(msg, find_menu)
+    bot.register_next_step_handler(msg, menu_starter)
 
 """ regular menu """
 
