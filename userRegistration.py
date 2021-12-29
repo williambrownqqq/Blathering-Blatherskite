@@ -20,7 +20,7 @@ class UserRegistration:
     """ registration """
     def create_user(self, message):
         try:
-            name = bot.send_message(message.chat.id, 'enter a name')
+            name = bot.send_message(message.chat.id, 'enter a name', reply_markup = types.ReplyKeyboardRemove())
             self.user = User(message.chat.id)
             self.user.username = message.chat.username
             bot.register_next_step_handler(name, self.process_name_step)

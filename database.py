@@ -61,7 +61,6 @@ def save_all(telegram_user):
             query = f"INSERT INTO botuser(ID, UserName, UserAge, UserSex, UserCity, UserPhoto, UserDescription, UserChatUsername) VALUES (%s, %s, %s, %s, %s, %s, %s, %s) "
             data = (id, nickname, age, sex, university, binary_data, description, chat_username)
         cursor.execute(query, data)
-
         connector.commit()
         print("Successfully connect!")
     except Exception as ex:
@@ -75,9 +74,7 @@ def take_photo(id):
         query = "SELECT * FROM botuser WHERE id = '{0}'"
         cursor.execute(query.format(str(id)))
         result = cursor.fetchone()[4]
-        print(type(result))
         store = "ImageOutputs/img{0}.jpg".format(str(id))
-        # print(result)
         with open(store, "wb") as file:
             print(type(result))
             file.write(result)  # works with bytes
