@@ -6,17 +6,16 @@ class User:
         self.idd = idd
 
     @property
-    def photoiID(self):
-        return self.__photoiID
+    def photo_id(self):
+        return self.__photo_id
 
-    @photoiID.setter
-    def photoiID(self, photoiID):
-        if not isinstance(photoiID, str):
+    @photo_id.setter
+    def photo_id(self, photo_id):
+        if not isinstance(photo_id, str):
             raise TypeError("Must be str!")
-        if photoiID is None:
+        if photo_id is None:
             raise ValueError("Mustn't be empty!")
-        self.__photoiID = photoiID
-
+        self.__photo_id = photo_id
 
     @property
     def age(self):
@@ -25,9 +24,9 @@ class User:
     @age.setter
     def age(self, age):
         if not isinstance(age, int):
-             raise TypeError("Must be int!")
+            raise TypeError("Must be int!")
         if not 14 < age < 100:
-             raise ValueError("Must be higher than 14 and lower than 100")
+            raise ValueError("Must be higher than 14 and lower than 100")
         self.__age = age
 
     @property

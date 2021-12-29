@@ -4,6 +4,7 @@ from userRegistration import UserRegistration
 from database import *
 import os
 
+
 @bot.message_handler(commands=['start'])  # начинаем
 def start(message):
     print(message.chat.id)
@@ -23,47 +24,45 @@ def get_text(message):
     if message.text == 'Yes, i want':  # c кнопки старта переходим в меню
         menu_starter(message)
     elif message.text == "No, i won't":
-        stopMenu = types.ReplyKeyboardMarkup(resize_keyboard=True, row_width=3, one_time_keyboard=True)
-        continueButton = types.KeyboardButton("Continue registration")
-        stopMenu.add(continueButton)
-        bot.send_message(message.chat.id, 'We will miss you!', reply_markup=stopMenu)
+        stop_menu = types.ReplyKeyboardMarkup(resize_keyboard=True, row_width=3, one_time_keyboard=True)
+        continue_button = types.KeyboardButton("Continue registration")
+        stop_menu.add(continue_button)
+        bot.send_message(message.chat.id, 'We will miss you!', reply_markup=stop_menu)
     elif message.text == 'Continue registration':
         menu_starter(message)
     elif message.text == 'Stop':
-        stopaction(message)
+        stop_actions(message)
     else:
         bot.send_message(message.chat.id, "Something went wrong")
         back_menu(message)
 
+
 @bot.message_handler(commands=['stop'])
-def stopaction(message):
+def stop_actions(message):
     try:
-        id = message.chat.id
-        active = 0
-        botquery = f"UPDATE botuser SET Active = %s WHERE ID = %s "
-        data = (active, id)
-        MyCursor.execute(botquery, data)
-        Myconnector.commit()
+        set_active(0, message.chat.id)
         print("Successfully connect!")
     except Exception as ex:
         print("Connection refused!")
         print(ex)
 
-    stopMenu = types.ReplyKeyboardMarkup(resize_keyboard=True, row_width=3, one_time_keyboard=True)
-    continueButton = types.KeyboardButton("Continue")
-    stopMenu.add(continueButton)
-    msg = bot.send_message(message.chat.id, f"Now you are invisible for others. We will miss u!",
-                     reply_markup=stopMenu)
+    stop_menu = types.ReplyKeyboardMarkup(resize_keyboard=True, row_width=3, one_time_keyboard=True)
+    continue_button = types.KeyboardButton("Continue")
+    stop_menu.add(continue_button)
+    msg = bot.send_message(message.chat.id, f"Now you are invisible for others. We will miss u!", 
+                           reply_markup=stop_menu)
     bot.register_next_step_handler(msg, menu_starter)
+
 
 """ regular menu """
 
 
 def menu_starter(message):
-    if checkuser(message.chat.username):
+    if check_user(message.chat.username):
         logged_menu(message)
     else:
         guest_menu(message)
+
 
 def guest_menu(message):
     markup_menu = types.ReplyKeyboardMarkup(resize_keyboard=True, row_width=3, one_time_keyboard=True)
@@ -71,8 +70,9 @@ def guest_menu(message):
     stop_button = types.KeyboardButton("Stop")
     markup_menu.add(profile_button, stop_button)
     msg = bot.send_message(message.chat.id, f"Choose your option",
-                     reply_markup=markup_menu)
+                                            reply_markup=markup_menu)
     bot.register_next_step_handler(msg, guest_menu_text)
+
 
 def logged_menu(message):
     markup_menu = types.ReplyKeyboardMarkup(resize_keyboard=True, row_width=3, one_time_keyboard=True)
@@ -84,15 +84,17 @@ def logged_menu(message):
                            reply_markup=markup_menu)
     bot.register_next_step_handler(msg, logged_menu_text)
 
+
 def guest_menu_text(message):
     if message.text == 'Create profile':  # create profile
         registration = UserRegistration()
         registration.create_user(message)  # from registration module
     elif message.text == 'Stop':
-        stopaction(message)
+        stop_actions(message)
     else:
         bot.send_message(message.chat.id, "Incorrect input")
         bot.register_next_step_handler(message, guest_menu_text)
+
 
 def logged_menu_text(message):
     print("guest menu")
@@ -102,12 +104,15 @@ def logged_menu_text(message):
         registration = UserRegistration()
         registration.create_user(message)  # from registration module
     elif message.text == 'Stop':
-        stopaction(message)
+        stop_actions(message)
     else:
         bot.send_message(message.chat.id, "Incorrect input")
         bot.register_next_step_handler(message, guest_menu_text)
 
+
 """ Menu after u don't want continue"""
+
+
 def back_menu(message):
     markup_back = types.ReplyKeyboardMarkup(resize_keyboard=True, row_width=1,
                                             one_time_keyboard=True)  # задали формат кнопок
@@ -116,23 +121,17 @@ def back_menu(message):
     markup_back.add(back_button)  # добавили кнопки
 
     msg = bot.send_message(message.chat.id, "hope u find a friend",
-                     reply_markup=markup_back)  # подвязали кнопки к сообщению
+                           reply_markup=markup_back)  # подвязали кнопки к сообщению
     bot.register_next_step_handler(msg, menu_starter)
+
 
 def find_menu(message):
     try:
-        id = message.chat.id
-        active = 1
-        botquery = f"UPDATE botuser SET Active = %s WHERE ID = %s "
-        data = (active, id)
-        MyCursor.execute(botquery, data)
-
-        Myconnector.commit()
+        set_active(1, message.chat.id)
         print("Successfully connect!")
     except Exception as ex:
         print("Connection refused!")
         print(ex)
-
     markup_back = types.ReplyKeyboardMarkup(resize_keyboard=True, row_width=3)  # задали формат кнопок
     print("Finding is OK")
     back_button = types.KeyboardButton("Menu")
@@ -140,41 +139,39 @@ def find_menu(message):
     button2 = types.KeyboardButton("Find female")
     markup_back.add(back_button, button1, button2)
     msg = bot.send_message(message.chat.id, f"Choose your option",
-                     reply_markup=markup_back)
-    bot.register_next_step_handler(msg, TakeAcc)
+                           reply_markup=markup_back)
+    bot.register_next_step_handler(msg, take_account)
 
-def TakeAcc(message):
+
+def take_account(message):
     try:
         if message.text == "Menu":
             menu_starter(message)
         else:
             if message.text == "Find male":
-                text = "Male"
+                sex = "Male"
             elif message.text == "Find female":
-                text = "Female"
+                sex = "Female"
             else:
                 bot.send_message(message.chat.id, 'Press buttons')
-            sqlQuery = f'SELECT * FROM botuser WHERE UserSex = "{text}" and id != {message.chat.id}' \
-                       f' and Active = 1 order by rand() LIMIT 1;'
-            MyCursor.execute(sqlQuery)
-            result = MyCursor.fetchone()
+            result = find_user(sex, message.chat.id)
             if result:
-                    print(result[3])
-                    MyResult = result[4]
-                    id = result[5]
-                    store = "ImageOutputs/img{0}.jpg".format(str(id))
-                    with open(store, "wb") as file:
-                        file.write(MyResult)  # works with bytes
-                        file.close()
-                    with open(store, 'rb') as file:
-                        msg = bot.send_photo(message.chat.id, file, caption=f'[{result[0]}](t.me/{result[7]}), {result[1]}, '
-                                                                      f'{result[2]}, {result[3]}', parse_mode='Markdown')
-                    try:
-                        os.remove(store)
-                    except OSError:
-                        pass
+                print(result[3])
+                image_output = result[4]
+                id = result[5]
+                store = "ImageOutputs/img{0}.jpg".format(str(id))
+                with open(store, "wb") as file:
+                    file.write(image_output)  # works with bytes
+                    file.close()
+                with open(store, 'rb') as file:
+                    msg = bot.send_photo(message.chat.id, file, caption=f'[{result[0]}](t.me/{result[7]}), {result[1]}, '
+                                         f'{result[2]}, {result[3]}', parse_mode='Markdown')
+                try:
+                    os.remove(store)
+                except OSError:
+                    pass
             else:
-                msg = bot.send_message(message.chat.id, f'No {text} in our bot, this is a gay-party')
-            bot.register_next_step_handler(msg, TakeAcc)
+                msg = bot.send_message(message.chat.id, f'No {sex} in our bot, this is a gay-party')
+            bot.register_next_step_handler(msg, take_account)
     except Exception as error:
         print("Failed to grab the photo from table", error)

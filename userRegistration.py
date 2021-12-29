@@ -2,7 +2,8 @@ import menu
 from batya import bot
 from telebot import types
 from user import User
-from database import writing
+from database import save_all
+
 
 class UserRegistration:
 
@@ -25,7 +26,6 @@ class UserRegistration:
             bot.register_next_step_handler(name, self.process_name_step)
         except Exception as ex:
             print(ex)
-
 
     def process_name_step(self, message):
         try:
@@ -62,7 +62,7 @@ class UserRegistration:
     def process_photo_step(self, message):
         try:
             try:
-                self.user.photoiID = message.photo[2].file_id
+                self.user.photo_id = message.photo[2].file_id
                 self.get_image(message)
             except TypeError:
                 msg = bot.send_message(message.chat.id, 'Upload photo again')
@@ -113,7 +113,7 @@ class UserRegistration:
         try:
             try:
                 self.user.sex = message.text
-                self.process_saveall_step(message)
+                self.process_save_all_step(message)
             except TypeError:
                 msg = bot.send_message(message.chat.id, 'Something went wrong. Try again.')
                 bot.register_next_step_handler(msg, self.process_sex_step)
@@ -122,9 +122,9 @@ class UserRegistration:
             print(ex)
             bot.reply_to(message, 'oooops')
 
-    def process_saveall_step(self, message):
+    def process_save_all_step(self, message):
         try:
-            writing(self.user)
+            save_all(self.user)
             path = 'DownloadedPhotos/' + self.user.photo
             with open(path, 'rb') as file:
                 bot.send_photo(message.chat.id, file)
@@ -139,18 +139,19 @@ class UserRegistration:
         try:
             try:
                 print("message.photo[2].file_id  ", message.photo[2].file_id)
-                photo = self.user.photoiID + ".jpg"  # photo name
+                photo = self.user.photo_id + ".jpg"  # photo name
                 self.user.photo = photo
             except TypeError:
                 msg = bot.send_message(message.chat.id, 'Something went wrong. Upload photo again. ')
                 bot.register_next_step_handler(msg, self.process_photo_step)
                 return
 
-            store = 'DownloadedPhotos/' + self.user.photoiID + ".jpg"  # photo path
-            file_info = bot.get_file(self.user.photoiID)  # photo description
+            store = 'DownloadedPhotos/' + self.user.photo_id + ".jpg"  # photo path
+            file_info = bot.get_file(self.user.photo_id)  # photo description
             download_file = bot.download_file(file_info.file_path)  # download file like bytes
             with open(store, "wb") as newFile:
                 newFile.write(download_file)
             print("photo successfully added")
         except Exception as ex:
             print(ex)
+            
