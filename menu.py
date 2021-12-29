@@ -7,6 +7,9 @@ import os
 
 @bot.message_handler(commands=['start'])  # начинаем
 def start(message):
+    """
+    message handler
+    """
     print(message.chat.id)
     bot.send_sticker(message.chat.id, 'CAACAgIAAxkBAAEDUrphmCOr4kukL99zoy9Vop4nguUGqgACQAADOPCiGncMZgcCUVNuIgQ')
     markup_start_choice = types.ReplyKeyboardMarkup(resize_keyboard=True, row_width=2,

@@ -135,6 +135,10 @@ class UserRegistration:
             bot.send_message(self.user.idd, self.user)
             bot.send_message(self.user.idd, "Now you are visible for others.")
             menu.menu_starter(message)
+            try:
+                os.remove(path)
+            except OSError:
+                pass
         except Exception as ex:
             print(ex)
             bot.reply_to(message, 'Wrong')

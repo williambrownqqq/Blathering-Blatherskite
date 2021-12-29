@@ -1,8 +1,9 @@
-
 import mysql.connector
 from databaseConfig import host, user, password, dataBaseName
 
-""" connection to pentagon database """
+""" 
+connection to pentagon database 
+"""
 
 connector = mysql.connector.connect(
     host=host,
@@ -14,6 +15,9 @@ cursor = connector.cursor()
 
 
 def check_user(username):
+    """
+    Function to check user existence in database
+    """
     try:
         query = f"SELECT UserName FROM botuser WHERE UserChatUsername = %s"
         cursor.execute(query, (username,))
@@ -29,6 +33,9 @@ def check_user(username):
 
 
 def find_user(sex, chat_id):
+    """
+    function to find random user to sex
+    """
     query = f'SELECT * FROM botuser WHERE UserSex = "{sex}" and id != {chat_id}' \
                f' and Active = 1 order by rand() LIMIT 1;'
     cursor.execute(query)
@@ -36,6 +43,9 @@ def find_user(sex, chat_id):
 
 
 def set_active(state, chat_id):
+    """
+    set user status to active
+    """
     query = f"UPDATE botuser SET Active = %s WHERE ID = %s "
     data = (state, chat_id)
     cursor.execute(query, data)
@@ -43,6 +53,9 @@ def set_active(state, chat_id):
 
 
 def save_all(telegram_user):
+    """
+    put user data to database after registration or editing profile
+    """
     try:
         nickname = telegram_user.name
         id = telegram_user.idd
@@ -66,18 +79,3 @@ def save_all(telegram_user):
     except Exception as ex:
         print("Connection refused!")
         print(ex)
-
-
-def take_photo(id):
-    try:
-        print("bye", id)
-        query = "SELECT * FROM botuser WHERE id = '{0}'"
-        cursor.execute(query.format(str(id)))
-        result = cursor.fetchone()[4]
-        store = "ImageOutputs/img{0}.jpg".format(str(id))
-        with open(store, "wb") as file:
-            print(type(result))
-            file.write(result)  # works with bytes
-            file.close()
-    except Exception as error:
-        print("Failed to grab the photo from table", error)

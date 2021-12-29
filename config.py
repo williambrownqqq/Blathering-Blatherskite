@@ -1,1 +1,5 @@
+"""
+token for telegram bot @GOODWORKBUDDYBOT
+"""
+
 TOKEN = '2101090905:AAFiz-XjT1ShHCH_tC5OMm9hDCEEXcS-WtI'
