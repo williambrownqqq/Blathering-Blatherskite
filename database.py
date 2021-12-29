@@ -57,7 +57,7 @@ def writing(myUser):
 def TakePhoto(id):
     try:
         print("bye", id)
-        sqlQuery = "SELECT * FROM BotUser WHERE id = '{0}'"
+        sqlQuery = "SELECT * FROM botuser WHERE id = '{0}'"
         MyCursor.execute(sqlQuery.format(str(id)))
         MyResult = MyCursor.fetchone()[4]
         print(type(MyResult))
