@@ -7,7 +7,13 @@ import os
 
 
 class UserRegistration:
-
+    """
+    Class for user registration, wonderful
+    """
+    """
+    attributes:
+    user: user, pretty handsome and also very wonderful     
+    """
     @property
     def user(self):
         return self.__user
@@ -20,6 +26,9 @@ class UserRegistration:
 
     """ registration """
     def create_user(self, message):
+        """
+        function to initialisation class User in class UserRegistration
+        """
         try:
             name = bot.send_message(message.chat.id, 'enter a name', reply_markup = types.ReplyKeyboardRemove())
             self.user = User(message.chat.id)
@@ -29,6 +38,9 @@ class UserRegistration:
             print(ex)
 
     def process_name_step(self, message):
+        """
+        step of entering name during registration
+        """
         try:
             try:
                 self.user.name = message.text
@@ -47,6 +59,9 @@ class UserRegistration:
             bot.reply_to(message, 'oops')
 
     def process_description_step(self, message):
+        """
+        step of entering acc description during registration
+        """
         try:
             try:
                 self.user.description = message.text
@@ -61,6 +76,9 @@ class UserRegistration:
             bot.reply_to(message, 'oops')
 
     def process_photo_step(self, message):
+        """
+        step of entering photo during registration
+        """
         try:
             try:
                 self.user.photo_id = message.photo[2].file_id
@@ -75,6 +93,9 @@ class UserRegistration:
             print(f"ex {ex}")
 
     def process_university_step(self, message):
+        """
+        step of entering study place during registration
+        """
         try:
             try:
                 self.user.university = message.text
@@ -94,6 +115,9 @@ class UserRegistration:
             bot.reply_to(message, 'oops')
 
     def process_age_step(self, message):
+        """
+        step of entering age during registration
+        """
         try:
             try:
                 self.user.age = int(message.text)
@@ -115,6 +139,9 @@ class UserRegistration:
             bot.reply_to(message, 'oooops')
 
     def process_sex_step(self, message):
+        """
+        step of sex during registration
+        """
         try:
             try:
                 self.user.sex = message.text
@@ -128,6 +155,9 @@ class UserRegistration:
             bot.reply_to(message, 'oooops')
 
     def process_save_all_step(self, message):
+        """
+        save new or edit acc in db and show acc to user
+        """
         try:
             save_all(self.user)
             path = 'DownloadedPhotos/' + self.user.photo
@@ -145,6 +175,9 @@ class UserRegistration:
             bot.reply_to(message, 'Wrong')
 
     def get_image(self, message):
+        """
+        function to get and save photo from user message
+        """
         try:
             try:
                 print("message.photo[2].file_id  ", message.photo[2].file_id)
