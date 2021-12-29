@@ -8,7 +8,7 @@ import os
 @bot.message_handler(commands=['start'])  # начинаем
 def start(message):
     """
-    message handler
+    message handler for command /start in first open bot
     """
     print(message.chat.id)
     bot.send_sticker(message.chat.id, 'CAACAgIAAxkBAAEDUrphmCOr4kukL99zoy9Vop4nguUGqgACQAADOPCiGncMZgcCUVNuIgQ')

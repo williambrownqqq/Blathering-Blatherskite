@@ -3,6 +3,7 @@ from batya import bot
 from telebot import types
 from user import User
 from database import save_all
+import os
 
 
 class UserRegistration:
