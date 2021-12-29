@@ -155,21 +155,20 @@ def TakeAcc(message):
             else:
                 bot.send_message(message.chat.id, 'Press buttons')
             sqlQuery = f'SELECT * FROM botuser WHERE UserSex = "{text}" and id != {message.chat.id}' \
-                       f' and Active = 1 order by rand() LIMIT 3;'
+                       f' and Active = 1 order by rand() LIMIT 1;'
             MyCursor.execute(sqlQuery)
-            result = MyCursor.fetchall()
+            result = MyCursor.fetchone()
             if result:
-                for person in result:
-                    print(person[3])
-                    MyResult = person[4]
-                    id = person[5]
+                    print(result[3])
+                    MyResult = result[4]
+                    id = result[5]
                     store = "ImageOutputs/img{0}.jpg".format(str(id))
                     with open(store, "wb") as file:
                         file.write(MyResult)  # works with bytes
                         file.close()
                     with open(store, 'rb') as file:
-                        msg = bot.send_photo(message.chat.id, file, caption=f'[{person[0]}](t.me/{person[7]}), {person[1]}, '
-                                                                      f'{person[2]}, {person[3]}', parse_mode='Markdown')
+                        msg = bot.send_photo(message.chat.id, file, caption=f'[{result[0]}](t.me/{result[7]}), {result[1]}, '
+                                                                      f'{result[2]}, {result[3]}', parse_mode='Markdown')
                     try:
                         os.remove(store)
                     except OSError:
